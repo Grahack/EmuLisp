@@ -1,0 +1,7 @@
+{
+    "name": "emulisp",
+    "version": "0.1.0",
+    "scripts": {
+          "test": "node emulisp_tests.js"
+    }
+}
