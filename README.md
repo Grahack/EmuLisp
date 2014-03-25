@@ -9,7 +9,7 @@ Javascript partial implementation of [PicoLisp](http://picolisp.com/)
 * [Github pages](http://grahack.github.io/EmuLisp/)
 * [Github repo](https://github.com/Grahack/EmuLisp)
 
-# From the author
+# Author's note
 
 EmuLisp is a [PicoLisp](http://picolisp.com/) emulator, written in JavaScript.
 However, in this early version it only covers a tiny subset of PicoLisp.
