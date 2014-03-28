@@ -1281,7 +1281,8 @@ var pub = {
 	NIL: NIL, T: T,
 	
 	eval: function(code) {
-		return prog(parseList(new Source(code))).toString();
+		var result = prog(parseList(new Source(code)));
+		if (result) return result.toString();
 	}
 }
 
