@@ -1898,14 +1898,6 @@ var pub = {
 	newSource: function(code) { return new Source(code); }
 }
 
-function testExports() {
-	var pubKeys = Object.keys(pub);
-	for (var i=0; i<pubKeys.length; i++) {
-		console.log("pub.%s: %s", pubKeys[i], typeof pub[pubKeys[i]]);
-	}
-}
-//testExports();
-
 return pub;
 
 }());
