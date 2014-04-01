@@ -1,10 +1,10 @@
-/* 12feb14jk
+/* 31mar14jk
  * (c) Jon Kleiser
  */
 
 var EMULISP_CORE = (function () {
 
-var VERSION = [2, 0, 0, 1],
+var VERSION = [2, 0, 0, 2],
 	BOXNAT_EXP = "Boxed native object expected",
 	BOOL_EXP = "Boolean expected", CELL_EXP = "Cell expected", LIST_EXP = "List expected",
 	NUM_EXP = "Number expected", SYM_EXP = "Symbol expected", VAR_EXP = "Variable expected",
@@ -264,6 +264,12 @@ var A1 = new Symbol("@", NIL), A2 = new Symbol("@@", NIL), A3 = new Symbol("@@@"
 var ZERO = new Number(0), ONE = new Number(1);
 var gEmptyObj = {};
 var cst, QUOTE;
+
+function emuEnv() {
+	if (typeof window != "undefined") return "browser";
+	if (typeof process != "undefined") return "node";
+	return NIL;
+}
 
 function prepareNewState(optionalState) {
 	cst = optionalState || {
@@ -629,6 +635,11 @@ var coreFunctions = {
 		_stdPrint(((new Date()).getTime() - t0) / 1000 + " sec\n"); return r;
 	},
 	"box": function(c) { return box(evalLisp(c.car)); },
+	"bye": function(c) { if (emuEnv() == "node") { process.exit(); } else {
+			console.log("Function 'bye' not supported");
+			return NIL;
+		}
+	},
 	"caar": function(c) { return car(car(evalLisp(c.car))); },
 	"caddr": function(c) { return car(cdr(cdr(evalLisp(c.car)))); },
 	"cadr": function(c) { return car(cdr(evalLisp(c.car))); },
@@ -1073,7 +1084,7 @@ var coreFunctions = {
 
 function internalSymbolsInclPrimitives() {
 	var symbols = {NIL: NIL, T: T, "@": A1, "@@": A2, "@@@": A3,
-		"*OS": new Symbol("*OS", "TODO")};
+		"*EMUENV": new Symbol("*EMUENV", emuEnv())};
 	var names = Object.keys(coreFunctions);
 	for (var i=0; i<names.length; i++) {
 		var name = names[i];
@@ -1291,7 +1302,7 @@ function testExports() {
 		console.log("pub.%s: %s", pubKeys[i], typeof pub[pubKeys[i]]);
 	}
 }
-testExports();
+//testExports();
 
 return pub;
 
