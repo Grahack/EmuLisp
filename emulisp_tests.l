@@ -117,3 +117,4 @@
 			'(= NIL ('(22)))
 			) )
 	(println (pack "Tests: " (+ Goods Bads) ", Errors: " Bads)) )
+(bye)
