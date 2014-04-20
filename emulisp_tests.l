@@ -3,7 +3,7 @@
 		'((BoolExpr)
 			(if (eval BoolExpr)
 				(inc 'Goods)
-				(inc 'Bads) (js:alert BoolExpr (eval (caddr BoolExpr))) ) )
+				(inc 'Bads) (println (pack "Return value for " (sym BoolExpr) " was " (sym (eval (caddr BoolExpr))) ".")) ) )
 		(list
 			'(= '(NIL) (list))
 			'(= T (= "abc" "abc"))
@@ -115,6 +115,13 @@
 			# curiosities
 			'(= 33 ('(22 33)))
 			'(= NIL ('(22)))
+
+			# sym
+			'(= "NIL" (sym NIL))
+			'(= "(1 2 3)" (sym (1 2 3)))
+			'(= "(1 2 3)" (sym '(1 2 3)))
+			'(= "(1 2 3)" (sym (quote 1 2 3)))
+			'(= "\"hello\"" (sym "hello"))
 			) )
 	(println (pack "Tests: " (+ Goods Bads) ", Errors: " Bads)) )
 (bye)
