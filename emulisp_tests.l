@@ -115,6 +115,9 @@
 			# curiosities
 			'(= 33 ('(22 33)))
 			'(= NIL ('(22)))
+
+			# set
+			'(let (X NIL) (prog (set 'X 0) (= 0 X)))
 			) )
 	(println (pack "Tests: " (+ Goods Bads) ", Errors: " Bads)) )
 (bye)
