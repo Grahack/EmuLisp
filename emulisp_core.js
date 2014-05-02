@@ -637,8 +637,7 @@ var coreFunctions = {
 	},
 	"box": function(c) { return box(evalLisp(c.car)); },
 	"bye": function(c) { if (emuEnv() == "nodejs") { process.exit(); } else {
-			console.log("Function 'bye' not supported");
-			return NIL;
+			throw new Error(newErrMsg("Function 'bye' not supported"));
 		}
 	},
 	"caar": function(c) { return car(car(evalLisp(c.car))); },
