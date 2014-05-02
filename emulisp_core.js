@@ -1288,7 +1288,7 @@ var pub = {
 	isCell: function(obj) { return (obj instanceof Cell); },
 	isSymbol: function(obj) { return (obj instanceof Symbol); },
 	
-	evalArgs: evalArgs, evalLisp: evalLisp, lispToStr: lispToStr, newErrMsg: newErrMsg,
+	evalArgs: evalArgs, evalLisp: evalLisp, lispToStr: lispToStr, loadLisp: loadLisp, newErrMsg: newErrMsg,
 	newTransSymbol: newTransSymbol, prog: prog, valueToStr: valueToStr, Params: Params,
 	NIL: NIL, T: T,
 	
