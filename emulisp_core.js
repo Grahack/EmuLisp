@@ -1,10 +1,10 @@
-/* 31mar14jk
+/* 02may14jk
  * (c) Jon Kleiser
  */
 
 var EMULISP_CORE = (function () {
 
-var VERSION = [2, 0, 0, 2],
+var VERSION = [2, 0, 0, 3],
 	BOXNAT_EXP = "Boxed native object expected",
 	BOOL_EXP = "Boolean expected", CELL_EXP = "Cell expected", LIST_EXP = "List expected",
 	NUM_EXP = "Number expected", SYM_EXP = "Symbol expected", VAR_EXP = "Variable expected",
@@ -130,6 +130,7 @@ Symbol.prototype.setVal = function(val) {
 // by escaping them with a backslash '\'.
 Symbol.prototype.escName = function() {
 	var eName = this.name.replace(/\\/g, "\\\\");
+	eName = eName.replace(/\"/g, "\\\"");
 	eName = eName.replace(/\^/g, "\\^");
 	eName = eName.replace(/\t/g, "^I");
 	eName = eName.replace(/\r/g, "^M");
