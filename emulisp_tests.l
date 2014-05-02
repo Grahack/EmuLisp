@@ -109,6 +109,7 @@
 			'(= (3 (3 2 1)) (let S NIL (list (push 'S 1 2 (+ 4 -1)) S)))
 			'(= '(NIL (NIL)) (let S NIL (list (push 'S) S)))
 			'(= '((4 3 . 1) 2) (let L (1 2) (push L 3 4) L))
+			'(= "(\"(1 2)\" \"(3 4)\")" (sym (list (sym '(1 2)) (sym '(3 4)))))
 			
 			# circular lists
 			'(= 1 (caddr (1 2 .)))
