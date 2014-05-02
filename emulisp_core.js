@@ -268,7 +268,7 @@ var cst, QUOTE;
 
 function emuEnv() {
 	if (typeof window != "undefined") return "browser";
-	if (typeof process != "undefined") return "node";
+	if (typeof process != "undefined") return "nodejs";
 	return NIL;
 }
 
@@ -636,7 +636,7 @@ var coreFunctions = {
 		_stdPrint(((new Date()).getTime() - t0) / 1000 + " sec\n"); return r;
 	},
 	"box": function(c) { return box(evalLisp(c.car)); },
-	"bye": function(c) { if (emuEnv() == "node") { process.exit(); } else {
+	"bye": function(c) { if (emuEnv() == "nodejs") { process.exit(); } else {
 			console.log("Function 'bye' not supported");
 			return NIL;
 		}
