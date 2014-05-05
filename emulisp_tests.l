@@ -1,4 +1,4 @@
-# 30apr14jk
+# 05may14jk
 
 (let (Goods 0 Bads 0)
 	(mapc
@@ -38,7 +38,7 @@
 			'(= 3 (for X (1 2 3 4) (= X 0) (T (= X 3) 'foo X) 'dummy))
 			'(= 3 (for X (1 2 3 4) (= X 0) (NIL (not (= X 3)) 'foo X) 'dummy))
 			'(= 3 (for (N 1 (not (= N 4)) (inc N)) N))
-			'(= (4 14) (for ((I . N) 11 (not (= I 4)) (inc N)) (list I N)))
+			'(= (3 13) (for ((I . N) 11 (not (= I 4)) (inc N)) (list I N)))
 			'(= (5 4 3 2 1) (make (for (N 1 (<= N 5) (inc N)) (yoke N))))
 			'(= 12 (for X (10 20) (T (inc X) (inc @))))
 			'(= 120 (mapc * (cdr (1 2 3)) (list 4 5 6) (7 8)))		# 3*5*8

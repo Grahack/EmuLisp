@@ -1,4 +1,4 @@
-/* 02may14jk
+/* 05may14jk
  * (c) Jon Kleiser
  */
 
@@ -736,8 +736,9 @@ var coreFunctions = {
 			s.pushValue(evalLisp(c.car.cdr.car));	if (s2 != null) s2.pushValue(ZERO);
 			var a2p = c.car.cdr.cdr, a2 = a2p.car, b = c.cdr, i = 0;
 			var p = (a2p.cdr instanceof Cell) ? a2p.cdr.car : null;
-			while (evalLisp(a2) !== NIL) {
-				if (s2 != null) s2.setVal(new Number(++i));
+			while (true) {
+				if (s2 != null) s2.setVal(new Number(++i));	// increment before condition
+				if (evalLisp(a2) === NIL) break;
 				var r = iter(b); v = r.v; if (r.m) break;
 				if (p != null) s.setVal(evalLisp(p));
 			}
