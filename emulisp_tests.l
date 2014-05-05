@@ -5,7 +5,7 @@
 		'((BoolExpr)
 			(if (eval BoolExpr)
 				(inc 'Goods)
-				(inc 'Bads) (js:alert BoolExpr (eval (caddr BoolExpr))) ) )
+				(inc 'Bads) (println 'Error: BoolExpr 'Result: (eval (caddr BoolExpr))) ) )
 		(list
 			'(= '(NIL) (list))
 			'(= T (= "abc" "abc"))
@@ -119,5 +119,5 @@
 			'(= 33 ('(22 33)))
 			'(= NIL ('(22)))
 			) )
-	(println (pack "Tests: " (+ Goods Bads) ", Errors: " Bads)) )
-(bye)
+	(println 'Tests: (+ Goods Bads) 'Errors: Bads)
+	(= 0 Bads) )
