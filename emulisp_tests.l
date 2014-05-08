@@ -120,4 +120,4 @@
 			'(= NIL ('(22)))
 			) )
 	(println 'Tests: (+ Goods Bads) 'Errors: Bads)
-	(= 0 Bads) )
+	(if (= 0 Bads) (bye 0) (bye 1)) )
