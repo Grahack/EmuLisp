@@ -1,18 +1,21 @@
 #!/bin/sh
 ':' //; exec "$(command -v nodejs || command -v node)" "$0" "$@"
 
-fs = require('fs')
-prompt = require('sync-prompt').prompt;
+// fs = require('fs')
+// prompt = require('sync-prompt').prompt;
+prompt = readline;
 
 var NO_DEBUG = "piljs -> no debug yet";
 
 // Load EmuLisp.
-var emulisp_src = fs.readFileSync('emulisp_core.js').toString();
+// var emulisp_src = fs.readFileSync('emulisp_core.js').toString();
+var emulisp_src = read('emulisp_core.js');
 eval(emulisp_src);
 
 // Process command line args.
 // TODO tp://www.software-lab.de/doc/refL.html#load
-var arglist = process.argv.slice(2);
+var arglist = [];//process.argv.slice(2);
+console = {log: print};
 while (true) {
     var arg = arglist.shift();
     if (typeof arg == 'undefined') {
