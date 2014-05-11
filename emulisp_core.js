@@ -1016,6 +1016,17 @@ var coreFunctions = {
 			c = c.cdr; } while (c !== NIL);
 		return cst.mk[0].h.car;
 	},
+	"while": function(c) {
+		var ret_value = NIL;
+		while (true) {
+			if(evalLisp(c.car) !== NIL) {
+				ret_value = prog(c.cdr);
+			} else {
+				break;
+			}
+		}
+		return ret_value;
+	},
 	"zero": function(c) {
 		do { setSymbolValue(c.car, ZERO); c = c.cdr; } while (c instanceof Cell); return ZERO;
 	},

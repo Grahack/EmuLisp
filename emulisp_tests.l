@@ -110,6 +110,8 @@
 			'(= '(NIL (NIL)) (let S NIL (list (push 'S) S)))
 			'(= '((4 3 . 1) 2) (let L (1 2) (push L 3 4) L))
 			'(= "(\"(1 2)\" \"(3 4)\")" (sym (list (sym '(1 2)) (sym '(3 4)))))
+			'(= NIL (while NIL 1))
+			'(= 0 (let N 7 (while (not (= 0 N)) (setq N (- N 1)))))
 			
 			# circular lists
 			'(= 1 (caddr (1 2 .)))
