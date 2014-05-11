@@ -509,6 +509,7 @@ var cst, QUOTE;
 function emuEnv() {
 	if (typeof window != "undefined") return "browser";
 	if (typeof process != "undefined") return "nodejs";
+	if (typeof build != "undefined") return "spidermonkey";
 	return NIL;
 }
 
@@ -884,10 +885,11 @@ var coreFunctions = {
 	"bool": function(c) { return (evalLisp(c.car) === NIL) ? NIL : T; },
 	"box": function(c) { return box(evalLisp(c.car)); },
 	"bye": function(c) { prog(getSymbol("*Bye").getVal());
-		if (emuEnv() == "nodejs") { var prv = evalLisp(c.car);
-			process.exit((prv instanceof Number) ? prv : 0); } else {
-			throw new Error(newErrMsg("Function 'bye' not supported"));
-		}
+		var prv = evalLisp(c.car);
+		var exitCode = (prv instanceof Number) ? prv : 0;
+		if (emuEnv() == "spidermonkey") { quit(exitCode); }
+		if (emuEnv() == "nodejs") { process.exit(exitCode); }
+		throw new Error(newErrMsg("Function 'bye' not supported"));
 	},
 	"caar": function(c) { return car(car(evalLisp(c.car))); },
 	"caddr": function(c) { return car(cdr(cdr(evalLisp(c.car)))); },
