@@ -116,6 +116,7 @@
 			'(= NIL (or))
 			'(= NIL (or (= 2 3) (= 3 4)))
 			'(= 3 (or (= 2 3) 3 (= 4 5)))
+			'(= T (or (= *EMUENV "browser") (= *EMUENV "nodejs") *OS))
 			
 			# circular lists
 			'(= 1 (caddr (1 2 .)))
