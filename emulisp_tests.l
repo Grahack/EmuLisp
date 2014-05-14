@@ -127,4 +127,6 @@
 			'(= NIL ('(22)))
 			) )
 	(println 'Tests: (+ Goods Bads) 'Errors: Bads)
-	(= 0 Bads) )
+	(if (= *EMUENV "browser")
+		(= 0 Bads)
+		(bye) ) )
