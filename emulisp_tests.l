@@ -1,4 +1,4 @@
-# 05may14jk
+# 13may14jk
 
 (let (Goods 0 Bads 0)
 	(mapc
