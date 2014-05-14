@@ -833,10 +833,14 @@ var coreFunctions = {
 		}
 		return mkResult();
 	},
+	"n0": function(c) { return eqVal(evalLisp(c.car), ZERO) ? NIL : T; },
 	"next": function(c) { cst.evFrames.car = cst.evFrames.car.cdr; return cst.evFrames.car.car; },
 	"not": function(c) { return (evalLisp(c.car) === NIL) ? T : NIL; },
 	"nth": function(c) { var lst = evalArgs(c); c = lst.cdr;
 		do { lst = nth(lst.car, numeric(c.car)); c = c.cdr; } while(c !== NIL); return lst; },
+	"or": function(c) { while (c instanceof Cell) { var v = evalLisp(c.car);
+			if (v !== NIL) return v; c = c.cdr; } return NIL;
+	},
 	// pack has no support for circular lists, same as in PicoLisp
 	"pack": function(c) { return (c !== NIL) ? newTransSymbol(valueToStr(evalArgs(c))) : NIL; },
 	"pass": function(c) { return applyFn(c.car, cst.evFrames.car.cdr, c.cdr); },

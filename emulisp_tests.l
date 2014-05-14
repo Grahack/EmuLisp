@@ -20,6 +20,9 @@
 			'(= T (<= 12 13 13 14 'X 'X 'Y))
 			'(= NIL (<= 12 14 13))
 			'(= T (<= (usec) (usec)))
+			'(= T (n0 'foo))
+			'(= NIL (n0 0))
+			'(= NIL (n0 (- 2 2)))
 			'(= 0 (prog (zero N) (= 1 2 (inc 'N)) N))
 			'(= 0 (prog (zero N) (== 1 2 (inc 'N)) N))
 			'(= "1two3T9" (pack 1 "two" (3 T) NIL (+ 4 5)))
@@ -110,6 +113,9 @@
 			'(= '(NIL (NIL)) (let S NIL (list (push 'S) S)))
 			'(= '((4 3 . 1) 2) (let L (1 2) (push L 3 4) L))
 			'(= "(\"(1 2)\" \"(3 4)\")" (sym (list (sym '(1 2)) (sym '(3 4)))))
+			'(= NIL (or))
+			'(= NIL (or (= 2 3) (= 3 4)))
+			'(= 3 (or (= 2 3) 3 (= 4 5)))
 			
 			# circular lists
 			'(= 1 (caddr (1 2 .)))
