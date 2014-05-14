@@ -284,6 +284,7 @@ function prepareNewState(optionalState) {
 		startupMillis: (new Date()).getTime()
 	};
 	QUOTE = getSymbol("quote");
+	getSymbol("*EMUENV").setVal(new Symbol(emuEnv()));
 }
 
 //var gSym = {NIL: NIL, T: T, "@": A1, "@@": A2, "@@@": A3};	// dictionary/index for internal symbols
@@ -1085,8 +1086,7 @@ var coreFunctions = {
 };
 
 function internalSymbolsInclPrimitives() {
-	var symbols = {NIL: NIL, T: T, "@": A1, "@@": A2, "@@@": A3,
-		"*EMUENV": new Symbol("*EMUENV", emuEnv())};
+	var symbols = {NIL: NIL, T: T, "@": A1, "@@": A2, "@@@": A3};
 	var names = Object.keys(coreFunctions);
 	for (var i=0; i<names.length; i++) {
 		var name = names[i];
