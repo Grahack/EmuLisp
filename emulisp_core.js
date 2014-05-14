@@ -637,7 +637,9 @@ var coreFunctions = {
 		_stdPrint(((new Date()).getTime() - t0) / 1000 + " sec\n"); return r;
 	},
 	"box": function(c) { return box(evalLisp(c.car)); },
-	"bye": function(c) { if (emuEnv() == "nodejs") { process.exit(); } else {
+	"bye": function(c) { prog(getSymbol("*Bye").getVal());
+		if (emuEnv() == "nodejs") { var prv = evalLisp(c.car);
+			process.exit((prv instanceof Number) ? prv : 0); } else {
 			throw new Error(newErrMsg("Function 'bye' not supported"));
 		}
 	},
