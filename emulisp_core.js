@@ -184,7 +184,7 @@ function Source(text, chars) {
 	// character limitation for symbols
 	if (chars instanceof Symbol) {
 		this.charset = chars.valueOf();
-	} else if (typeof chars == "string") {
+	} else if (typeof chars === "string") {
 		//alert("Source2: " + chars);
 		this.charset = chars;
 	}
@@ -546,12 +546,12 @@ function parseList(src, evaluate, editMode) {
 				item = tmp;
 			} else if (ch == "\"") {
 				s = "";
-				while (typeof (ch = src.getNextStringChar()) == "string") s += ch;
+				while (typeof (ch = src.getNextStringChar()) === "string") s += ch;
 				item = (s == "") ? NIL : getString(s, editMode);
 				src.traceItemEnd(item);		// in case we would like to know item's position
 			} else {
 				s = ch;
-				while (typeof (ch = src.getNextSymbolChar()) == "string") s += ch;
+				while (typeof (ch = src.getNextSymbolChar()) === "string") s += ch;
 				item = isNaN(s) ? getSymbol(s, editMode) : new Number(s);
 				src.traceItemEnd(item);		// in case we would like to know item's position
 			}
