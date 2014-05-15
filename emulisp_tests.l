@@ -129,4 +129,4 @@
 	(println 'Tests: (+ Goods Bads) 'Errors: Bads)
 	(if (= *EMUENV "browser")
 		(= 0 Bads)
-		(bye) ) )
+		(if (= 0 Bads) (bye 0) (bye 1))))
