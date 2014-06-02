@@ -1,4 +1,4 @@
-/* 13may14jk
+/* 01jun14jk
  * (c) Jon Kleiser
  */
 
@@ -371,6 +371,8 @@ function getAlg(c) {
 				} else {
 					do { s = s.cdr; } while ((s !== NIL) && (++k < 0));
 				}
+			} else {
+				s = NIL;
 			}
 		} else throw new Error(newErrMsg(SYM_EXP));
 		c = c.cdr;
@@ -749,11 +751,15 @@ var coreFunctions = {
 		s.popValue();	if (s2 != null) s2.popValue();
 		return v;
 	},
+	"ge0": function(c) { var cv = evalLisp(c.car);
+		return ((cv instanceof Number) && (cv >= 0)) ? cv : NIL; },
 	"get": function(c) { return getAlg(evalArgs(c)); },
 	"getl": function(c) { var s = getAlg(evalArgs(c));
 		if (s instanceof Symbol) return s.props;
 		throw new Error(newErrMsg(SYM_EXP, s));
 	},
+	"gt0": function(c) { var cv = evalLisp(c.car);
+		return ((cv instanceof Number) && (cv > 0)) ? cv : NIL; },
 	"idx": function(c) { var s = evalLisp(c.car);
 		if (!(s instanceof Symbol)) return NIL;
 		if (c.cdr === NIL) { mkNew(); idxLinkSorted(s.getVal()); return mkResult(); }
@@ -770,6 +776,8 @@ var coreFunctions = {
 		var v = new Number(ns.getVal() + ((c.cdr !== NIL) ? numeric(evalLisp(c.cdr.car)) : 1));
 		ns.setVal(v); return v;
 	},
+	"le0": function(c) { var cv = evalLisp(c.car);
+		return ((cv instanceof Number) && (cv <= 0)) ? cv : NIL; },
 	"length": function(c) { var cv = evalLisp(c.car), v = 0;
 		if (cv instanceof Number) { v = cv.toString().length; }
 		else if (cv instanceof Symbol) { v = cv.lock ? cv.toValueString().length :
@@ -814,6 +822,8 @@ var coreFunctions = {
 	"loop": function(c) {
 		var v = NIL; while (true) { var r = iter(c); v = r.v; if (r.m) break; }; return v;
 	},
+	"lt0": function(c) { var cv = evalLisp(c.car);
+		return ((cv instanceof Number) && (cv < 0)) ? cv : NIL; },
 	"make": function(c) { mkNew(); prog(c); return mkResult(); },
 	"mapc": function(c) { var r = NIL, fn = evalLisp(c.car), ci = evalArgs(c.cdr);
 		if (! (fn instanceof Symbol)) fn = box(fn);
@@ -1062,8 +1072,10 @@ var coreFunctions = {
 		return (d >= 0) ? Math.floor(d) : Math.ceil(d); }); },	// truncated division
 	"=": function(c) { var cv = evalLisp(c.car), d = c, dv;
 		while (d.cdr !== NIL) { d = d.cdr; dv = evalLisp(d.car); if (!eqVal(cv, dv)) return NIL; }; return T; },
+	"=0": function(c) { return eqVal(evalLisp(c.car), ZERO) ? ZERO : NIL; },
 	"==": function(c) { var cv = evalLisp(c.car), d = c, dv;
 		while (d.cdr !== NIL) { d = d.cdr; dv = evalLisp(d.car); if (cv !== dv) return NIL; }; return T; },
+	"=T": function(c) { return (evalLisp(c.car) === T) ? T : NIL; },
 	"<": function(c) { var cv = evalLisp(c.car), d = c, dv;
 		while (d.cdr !== NIL) {
 			d = d.cdr; dv = evalLisp(d.car); if (!ltVal(cv, dv)) return NIL;
@@ -1076,6 +1088,8 @@ var coreFunctions = {
 			cv = dv;
 		}; return T;
 	},
+	"<>": function(c) { var cv = evalLisp(c.car), d = c, dv;
+		while (d.cdr !== NIL) { d = d.cdr; dv = evalLisp(d.car); if (!eqVal(cv, dv)) return T; }; return NIL; },
 	">": function(c) { var cv = evalLisp(c.car), d = c, dv;
 		while (d.cdr !== NIL) {
 			d = d.cdr; dv = evalLisp(d.car); if (!ltVal(dv, cv)) return NIL;
