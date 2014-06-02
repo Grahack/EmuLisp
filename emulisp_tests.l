@@ -90,6 +90,8 @@
 			'(= 5 (let N 0 (do (+ 2 3) (inc 'N))))
 			'(= 3 (let (N 0 R NIL) (do T (inc 'N) (T (= N 3) (setq R N)))))
 			'(= 3 (let (N 0 R NIL) (loop (inc 'N) (T (= N 3) (setq R N)))))
+			'(= NIL (while NIL 1))
+			'(= 6 (let (N 4 A (or 0)) (while (gt0 (dec 'N)) (inc 'A @))))
 			'(= (2 (2)) (let A NIL (list (queue 'A 2) A)))
 			'(= (4 (1 2 3 4)) (let A (1 2 3) (list (queue 'A 4) A)))
 			'(= (4 ((1 2 3 4) 5)) (let A '((1 2 3) 5) (list (queue A 4) A)))
@@ -135,7 +137,7 @@
 			'(= "(\"(1 2)\" \"(3 4)\")" (sym (list (sym '(1 2)) (sym '(3 4)))))
 			'(= NIL (or))
 			'(= NIL (or (= 2 3) (= 3 4)))
-			'(= 3 (or (= 2 3) 3 (= 4 5)))
+			'(= (3 3) (list (or (= 2 3) 3 (= 4 5)) @))
 			'(= T (or (= *EMUENV "browser") (= *EMUENV "nodejs") *OS))
 			
 			# circular lists
