@@ -1772,10 +1772,9 @@ function loadJavaScript(fileUrl) {
 }
 
 function _stdPrint(text) {
+	// Here the user can override _stdPrint with its own stdPrint.
 	if (typeof stdPrint === "function") stdPrint(text)
-	else // when function stdPrint is not available in front end
-	//if (!confirm("_stdPrint:\n" + text)) throw new Error("_stdPrint aborted");
-	console.log(text);
+	else console.log(text);
 }
 
 function _warn(msg) {
