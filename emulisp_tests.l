@@ -1,4 +1,4 @@
-# 02jun14jk
+# 03jun14jk
 
 (let (Goods 0 Bads 0)
 	(mapc
@@ -45,6 +45,7 @@
 			'(= 0 (prog (zero N) (= 1 2 (inc 'N)) N))
 			'(= 0 (prog (zero N) (== 1 2 (inc 'N)) N))
 			'(= "1two3T9" (pack 1 "two" (3 T) NIL (+ 4 5)))
+			'(= NIL (pack ""))
 			'(= 6 (eval (list '+ 1 2 3)))
 			'(= "BCDC" (prog (setq A 'B B 'C C 'D) (pack A B C (eval A))))
 			#'(= "BCDC" (let ("A" "B" "B" "C" "C" "D") (pack "A" "B" "C" (eval "A"))))

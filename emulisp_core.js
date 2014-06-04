@@ -1,4 +1,4 @@
-/* 02jun14jk
+/* 03jun14jk
  * (c) Jon Kleiser
  */
 
@@ -852,7 +852,10 @@ var coreFunctions = {
 			if (aTrue(v)) return v; c = c.cdr; } return NIL;
 	},
 	// pack has no support for circular lists, same as in PicoLisp
-	"pack": function(c) { return (c !== NIL) ? newTransSymbol(valueToStr(evalArgs(c))) : NIL; },
+	"pack": function(c) {
+		if (c !== NIL) { var s = valueToStr(evalArgs(c)); if (s !== "") return newTransSymbol(s); }
+		return NIL;
+	},
 	"pass": function(c) { return applyFn(c.car, cst.evFrames.car.cdr, c.cdr); },
 	"pop": function(c) { var cv = evalLisp(c.car);
 		if (cv.getVal) {
