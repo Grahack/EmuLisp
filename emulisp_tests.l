@@ -139,6 +139,12 @@
 			'(= NIL (or))
 			'(= NIL (or (= 2 3) (= 3 4)))
 			'(= (3 3) (list (or (= 2 3) 3 (= 4 5)) @))
+			'(= "hello" (str? "hello"))
+			'(= NIL (str? '("hello")))
+			'(= NIL (str? 0))
+			'(= 0 (num? 0))
+			'(= NIL (num? "0"))
+			'(= NIL (num? '(0)))
 			'(= T (or (= *EMUENV "browser") (= *EMUENV "nodejs") *OS))
 			
 			# circular lists
