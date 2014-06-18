@@ -1,4 +1,4 @@
-# 03jun14jk
+# 17jun14jk
 
 (let (Goods 0 Bads 0)
 	(mapc
@@ -22,24 +22,12 @@
 			'(= T (<= (usec) (usec)))
 			'(= T (<> 2 2 3))
 			'(= NIL (<> 2 2 2))
-			'(= NIL (ge0 'foo))
-			'(= NIL (ge0 -1))
-			'(= 0 (ge0 (- 2 2)))
-			'(= NIL (gt0 'foo))
-			'(= NIL (gt0 -1))
-			'(= 1 (gt0 (- 3 2)))
-			'(= NIL (le0 'foo))
-			'(= NIL (le0 1))
-			'(= 0 (le0 (- 2 2)))
-			'(= NIL (lt0 'foo))
-			'(= NIL (lt0 1))
-			'(= -1 (lt0 (- 2 3)))
-			'(= T (n0 'foo))
-			'(= NIL (n0 0))
-			'(= NIL (n0 (- 2 2)))
-			'(= NIL (=0 'foo))
-			'(= NIL (=0 1))
-			'(= 0 (=0 (- 2 2)))
+			'(= '(NIL NIL 0 3) (mapcar ge0 (list 'foo -1 (- 2 2) 3)))
+			'(= '(NIL NIL 1 3) (mapcar gt0 (list 'foo -1 (- 3 2) 3)))
+			'(= '(NIL -1 0 NIL) (mapcar le0 (list 'foo -1 (- 2 2) 3)))
+			'(= '(NIL -1 NIL NIL) (mapcar lt0 (list 'foo -1 (- 2 2) 3)))
+			'(= '(T T NIL T) (mapcar n0 (list 'foo -1 (- 2 2) 3)))
+			'(= '(NIL NIL 0 NIL) (mapcar =0 (list 'foo -1 (- 2 2) 3)))
 			'(= T (=T (= 2 2)))
 			'(= NIL (=T 0))
 			'(= 0 (prog (zero N) (= 1 2 (inc 'N)) N))
@@ -53,6 +41,7 @@
 			'(= T (prog (setq "A" '"B") (= "A" 'B)))
 			'(= 3 (fin (1 2 . 3)))
 			'(= NIL (fin (1 2 3)))
+			'(= (7 3) (list (if 3 (+ @ 4) 9) @))
 			'(= 15 (if 5 (if NIL 88 'dummy1 'dummy2 (+ @ 10)) 99))
 			'(= 15 (ifn 5 99 (ifn NIL (+ @ 10) 'dummy1 88)))
 			'(= 120 (prog (de fact (N) (if (= 0 N) 1 (* N (fact (- N 1))))) (fact 5)))
@@ -140,6 +129,8 @@
 			'(= NIL (or (= 2 3) (= 3 4)))
 			'(= (3 3) (list (or (= 2 3) 3 (= 4 5)) @))
 			'(= T (or (= *EMUENV "browser") (= *EMUENV "nodejs") *OS))
+			'(= '(3 NIL NIL NIL NIL NIL) (mapcar num? (list (+ 1 2) T NIL '(4 5) 'foo "bar")))
+			'(= '(NIL NIL NIL NIL NIL "bar") (mapcar str? (3 T NIL '(4 5) 'foo "bar")))
 			
 			# circular lists
 			'(= 1 (caddr (1 2 .)))

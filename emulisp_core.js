@@ -1,4 +1,4 @@
-/* 03jun14jk
+/* 17jun14jk
  * (c) Jon Kleiser
  */
 
@@ -324,9 +324,7 @@ function newErrMsg(msg, badValue) {
 	return (badValue === undefined) ? msg : lispToStr(badValue) + " -- " + msg;
 }
 
-function aTrue(val) { if (val !== NIL) { A1.pushValue(val); return true; } else return false; }
-
-function aPop(val) { A1.popValue(); return val; }
+function aTrue(val) { if (val !== NIL) { A1.setVal(val); return true; } else return false; }
 
 function car(c) { if (c.car) return c.car; else throw new Error(newErrMsg(LIST_EXP)); }
 function cdr(c) { if ((c instanceof Cell) || (c === NIL)) return c.cdr;
@@ -398,7 +396,6 @@ function iter(c) {
 		if (cond) {
 			if (cMatch) {
 				v = prog(cv.cdr.cdr);
-				if (cv.car === T) aPop(v);
 				return {v: v, m: true};
 			}
 		} else v = evalLisp(cv);
@@ -662,7 +659,7 @@ var coreFunctions = {
 	},
 	"cond": function(c) {
 		while (c.car instanceof Cell) {
-			if (aTrue(evalLisp(c.car.car))) return aPop(prog(c.car.cdr));
+			if (aTrue(evalLisp(c.car.car))) return prog(c.car.cdr);
 			c = c.cdr;
 		}
 		return NIL;
@@ -767,8 +764,8 @@ var coreFunctions = {
 		if (c.cdr.cdr === NIL) return idxLookup(s, a);
 		return (evalLisp(c.cdr.cdr.car) === NIL) ? idxDelete(s, a) : idxInsert(s, a);
 	},
-	"if": function(c) { return aTrue(evalLisp(c.car)) ? aPop(evalLisp(c.cdr.car)) : prog(c.cdr.cdr); },
-	"ifn": function(c) { return aTrue(evalLisp(c.car)) ? aPop(prog(c.cdr.cdr)) : evalLisp(c.cdr.car); },
+	"if": function(c) { return aTrue(evalLisp(c.car)) ? evalLisp(c.cdr.car) : prog(c.cdr.cdr); },
+	"ifn": function(c) { return aTrue(evalLisp(c.car)) ? prog(c.cdr.cdr) : evalLisp(c.cdr.car); },
 	"inc": function(c) {
 		if (c === NIL) return NIL;
 		var ns = evalLisp(c.car);
@@ -848,6 +845,7 @@ var coreFunctions = {
 	"not": function(c) { return (evalLisp(c.car) === NIL) ? T : NIL; },
 	"nth": function(c) { var lst = evalArgs(c); c = lst.cdr;
 		do { lst = nth(lst.car, numeric(c.car)); c = c.cdr; } while(c !== NIL); return lst; },
+	"num?": function(c) { var v = evalLisp(c.car); return (v instanceof Number) ? v : NIL; },
 	"or": function(c) { while (c instanceof Cell) { var v = evalLisp(c.car);
 			if (aTrue(v)) return v; c = c.cdr; } return NIL;
 	},
@@ -984,6 +982,7 @@ var coreFunctions = {
 		if (cv === NIL) return NIL;
 		throw new Error(newErrMsg(CELL_EXP, cv));
 	},
+	"str?": function(c) { var v = evalLisp(c.car); return ((v instanceof Symbol) && v.trans) ? v : NIL; },
 	"sym": function(c) { return newTransSymbol(evalLisp(c.car).toString()); },
 	"tail": function(c) {
 		var cl = evalLisp(c.car), lst = evalLisp(c.cdr.car);
