@@ -1,10 +1,10 @@
-/* 18jun14jk
+/* 26jun14jk
  * (c) Jon Kleiser
  */
 
 var EMULISP_CORE = (function () {
 
-var VERSION = [2, 0, 0, 4],
+var VERSION = [2, 0, 1, 0],
 	BOXNAT_EXP = "Boxed native object expected",
 	BOOL_EXP = "Boolean expected", CELL_EXP = "Cell expected", LIST_EXP = "List expected",
 	NUM_EXP = "Number expected", SYM_EXP = "Symbol expected", VAR_EXP = "Variable expected",
@@ -91,14 +91,14 @@ Cell.prototype.toValueString = function() {
 function Symbol(name, val) {
 	this.name = name;
 	this.trans = false;
-	this.cdr = (val === undefined) ? NIL : val;
+	this.car = (val === undefined) ? NIL : val;	// Ersatz-like
 	this.props = NIL;
 }
 
 function newTransSymbol(name) {
 	var ts = new Symbol(name);
 	ts.trans = true;
-	ts.cdr = ts;
+	ts.car = ts;	// Ersatz-like
 	return ts;
 }
 
@@ -112,7 +112,7 @@ function box(val) {
 Symbol.prototype.TYPEVAL = SYMBOLTYPE;
 
 Symbol.prototype.getVal = function() {
-	return this.cdr;
+	return this.car;	// Ersatz-like
 }
 
 Symbol.prototype.valueOf = function() {
@@ -121,7 +121,7 @@ Symbol.prototype.valueOf = function() {
 
 Symbol.prototype.setVal = function(val) {
 	if (this.lock) throw new Error(newErrMsg(PROT_SYM, this));
-	this.cdr = val;
+	this.car = val;	// Ersatz-like
 }
 
 // Internal symbol names can consist of any printable (non-whitespace) character,
@@ -153,13 +153,13 @@ Symbol.prototype.toValueString = function() {
 
 Symbol.prototype.pushValue = function(val) {
 	if (this.stack === undefined) this.stack = [];
-	this.stack.push(this.cdr);
-	this.cdr = val;
+	this.stack.push(this.car);	// Ersatz-like
+	this.car = val;	// Ersatz-like
 }
 
 Symbol.prototype.popValue = function() {
-	var pv = this.cdr;
-	this.cdr = this.stack.pop();
+	var pv = this.car;	// Ersatz-like
+	this.car = this.stack.pop();	// Ersatz-like
 	//if (this.stack.length === 0) delete this.stack;
 	return pv;
 }
@@ -177,6 +177,11 @@ function getSymbol(name, editMode) {
 function setSymbolValue(s, val) {
 	if (!(s instanceof Symbol)) throw new Error(newErrMsg(VAR_EXP, s));
 	s.setVal(val);
+}
+
+function needVar(ex, x) {
+	if (x instanceof Number) throw new Error(newErrMsg(VAR_EXP, x));	// Ersatz-like
+	// TODO: handle ex
 }
 
 function Source(text, chars) {
@@ -260,7 +265,7 @@ Source.prototype.getSymbolBeforePos = function(endPos) {
 
 var NIL = new Symbol("NIL");	NIL.car = NIL;	NIL.cdr = NIL;	NIL.props = NIL;
 		NIL.lock = true; NIL.TYPEVAL = NILTYPE; NIL.bool = false;
-var T = new Symbol("T");	T.cdr = T;	T.lock = true; T.TYPEVAL = TRUETYPE; T.bool = true;
+var T = new Symbol("T");	T.car = T;	T.lock = true; T.TYPEVAL = TRUETYPE; T.bool = true;
 var A1 = new Symbol("@", NIL), A2 = new Symbol("@@", NIL), A3 = new Symbol("@@@", NIL);
 var ZERO = new Number(0), ONE = new Number(1);
 var gEmptyObj = {};
@@ -615,8 +620,8 @@ function CompExpr(fn) {
 }
 
 CompExpr.prototype.evalTrue = function(a, b) {
-	this.arg1Sym.cdr = a;	// faster than this.arg1Sym.setVal(a);
-	this.arg2Sym.cdr = b;
+	this.arg1Sym.car = a;	// Ersatz-like, faster than this.arg1Sym.setVal(a);
+	this.arg2Sym.car = b;	// Ersatz-like
 	return (evalLisp(this.expr) === T);
 }
 
@@ -635,6 +640,7 @@ var coreFunctions = {
 	"bench": function(c) { var t0 = (new Date()).getTime(), r = prog(c);
 		_stdPrint(((new Date()).getTime() - t0) / 1000 + " sec\n"); return r;
 	},
+	"bool": function(c) { return (evalLisp(c.car) === NIL) ? NIL : T; },
 	"box": function(c) { return box(evalLisp(c.car)); },
 	"bye": function(c) { prog(getSymbol("*Bye").getVal());
 		if (emuEnv() == "nodejs") { var prv = evalLisp(c.car);
@@ -843,6 +849,7 @@ var coreFunctions = {
 	"n0": function(c) { return eqVal(evalLisp(c.car), ZERO) ? NIL : T; },
 	"next": function(c) { cst.evFrames.car = cst.evFrames.car.cdr; return cst.evFrames.car.car; },
 	"not": function(c) { return (evalLisp(c.car) === NIL) ? T : NIL; },
+	"nT": function(c) { return (evalLisp(c.car) === T) ? NIL : T; },
 	"nth": function(c) { var lst = evalArgs(c); c = lst.cdr;
 		do { lst = nth(lst.car, numeric(c.car)); c = c.cdr; } while(c !== NIL); return lst; },
 	"num?": function(c) { var v = evalLisp(c.car); return (v instanceof Number) ? v : NIL; },
@@ -941,6 +948,16 @@ var coreFunctions = {
 		do { r = new Cell(lst.car, r); lst = lst.cdr; } while (lst instanceof Cell);
 		return r;
 	},
+	"set": function(c) {
+		var v = NIL;
+		while (c instanceof Cell) {
+			v = (c.cdr instanceof Cell) ? evalLisp(c.cdr.car) : NIL;
+			needVar(c, c.car);
+			evalLisp(c.car).car = v;
+			c = (c.cdr instanceof Cell) ? c.cdr.cdr : NIL;
+		}
+		return v;
+	},	
 	"setq": function(c) {
 		var v = NIL;
 		while (c instanceof Cell) {
@@ -984,6 +1001,7 @@ var coreFunctions = {
 	},
 	"str?": function(c) { var v = evalLisp(c.car); return ((v instanceof Symbol) && v.trans) ? v : NIL; },
 	"sym": function(c) { return newTransSymbol(evalLisp(c.car).toString()); },
+	"sym?": function(c) { return (evalLisp(c.car) instanceof Symbol) ? T : NIL; },
 	"tail": function(c) {
 		var cl = evalLisp(c.car), lst = evalLisp(c.cdr.car);
 		if (cl instanceof Cell) {
@@ -1026,6 +1044,7 @@ var coreFunctions = {
 		return s;
 	},
 	"usec": function(c) { return new Number(((new Date()).getTime() - cst.startupMillis) * 1000); },
+	"val": function(c) { return evalLisp(c.car).car; },
 	"version": function(c) { if (!aTrue(evalLisp(c.car))) _stdPrint(VERSION.join(".") + " JS\n");
 		mkNew(); for (var i=0; i<VERSION.length; i++) { link(VERSION[i]); }; return mkResult(); },
 	"while": function(c) {
@@ -1158,14 +1177,14 @@ function evalDef(def, inExprLst) {
 }
 
 function evalLisp(lst) {
-	if (lst instanceof Symbol) return lst.cdr;
+	if (lst instanceof Symbol) return lst.car;	// Ersatz-like
 	if (lst instanceof Cell) {
-		if (typeof lst.car.cdr === "function") {
-			return lst.car.cdr(lst.cdr);
+		if (typeof lst.car.car === "function") {
+			return lst.car.car(lst.cdr);	// Ersatz-like
 		}
 		if (lst.car instanceof Symbol) {
-			if (lst.car.cdr === NIL) throw new Error(newErrMsg(UNDEF, lst.car));
-			return evalDef(lst.car.cdr, lst.cdr);
+			if (lst.car.car === NIL) throw new Error(newErrMsg(UNDEF, lst.car));
+			return evalDef(lst.car.car, lst.cdr);	// Ersatz-like
 		}
 		if ((lst.car.car === QUOTE) && (lst.car.cdr instanceof Cell)) {
 			return evalDef(lst.car.cdr, lst.cdr);

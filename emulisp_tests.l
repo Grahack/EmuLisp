@@ -1,4 +1,4 @@
-# 17jun14jk
+# 26jun14jk
 
 (let (Goods 0 Bads 0)
 	(mapc
@@ -28,6 +28,8 @@
 			'(= '(NIL -1 NIL NIL) (mapcar lt0 (list 'foo -1 (- 2 2) 3)))
 			'(= '(T T NIL T) (mapcar n0 (list 'foo -1 (- 2 2) 3)))
 			'(= '(NIL NIL 0 NIL) (mapcar =0 (list 'foo -1 (- 2 2) 3)))
+			'(= NIL (nT (= 2 2)))
+			'(= T (nT 0))
 			'(= T (=T (= 2 2)))
 			'(= NIL (=T 0))
 			'(= 0 (prog (zero N) (= 1 2 (inc 'N)) N))
@@ -35,6 +37,9 @@
 			'(= "1two3T9" (pack 1 "two" (3 T) NIL (+ 4 5)))
 			'(= NIL (pack ""))
 			'(= 6 (eval (list '+ 1 2 3)))
+			'(= '(9 (a 9 c)) (list (set 'L '(a b c) (cdr L) 9) L))
+			'(= '(3 3) (list (set (car (str "X")) 3) X))
+			'(= '((a b c) b) (let L '(a b c) (list (val 'L) (val (cdr L)))))
 			'(= "BCDC" (prog (setq A 'B B 'C C 'D) (pack A B C (eval A))))
 			#'(= "BCDC" (let ("A" "B" "B" "C" "C" "D") (pack "A" "B" "C" (eval "A"))))
 			'(= "BCDC" (prog (setq "A" '"B" "B" '"C" "C" '"D") (pack "A" "B" "C" (eval "A"))))
@@ -100,7 +105,7 @@
 			'(= '(NIL 3 3 "X" "Y" 'X 'Y) (let L (3 'Y "Y" 'X 3 "X" NIL) (sort L)))
 			'(= '('Y 'X "Y" "X" 3 3 NIL) (let L (3 'Y "Y" 'X 3 "X" NIL) (sort L >)))
 			'(= 5 (sort (+ 2 3) 4))
-			'(= (3 2 1) (sort (1 2 3) (cadr '(x >))))
+			'(= (4 3 2 1) (sort (1 4 2 3) (cadr '(x >))))
 			'(= (1111 222 33 4) (sort (33 222 4 1111) '((A B) (> (length A) (length B)))))
 			'(= (5 (3 NIL 4) 7) (let I NIL (for X (5 3 7 4 3) (idx 'I X T)) I))
 			'(= (5 (3) 7) (let I NIL (for X (5 7 3) (idx 'I X T)) (idx 'I 5)))
@@ -128,9 +133,11 @@
 			'(= NIL (or))
 			'(= NIL (or (= 2 3) (= 3 4)))
 			'(= (3 3) (list (or (= 2 3) 3 (= 4 5)) @))
-			'(= T (or (= *EMUENV "browser") (= *EMUENV "nodejs") *OS))
+			'(= T (or (= *EMUENV "browser") (= *EMUENV "nodejs") (sym? *OS)))
+			'(= '(T T NIL T T T) (mapcar bool (list (or 1 2) T NIL '(4 5) 'foo "bar")))
 			'(= '(3 NIL NIL NIL NIL NIL) (mapcar num? (list (+ 1 2) T NIL '(4 5) 'foo "bar")))
 			'(= '(NIL NIL NIL NIL NIL "bar") (mapcar str? (3 T NIL '(4 5) 'foo "bar")))
+			'(= '(NIL T T NIL NIL T) (mapcar sym? (3 T NIL '(4 5) 'foo "bar")))
 			
 			# circular lists
 			'(= 1 (caddr (1 2 .)))
