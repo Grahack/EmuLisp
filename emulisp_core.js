@@ -1303,6 +1303,7 @@ var coreFunctions = {
 		}
 		throw new Error(newErrMsg(VAR_EXP, s));
 	},
+	"quit": function(c) { throw new Error(newErrMsg(evalLisp(c.car), evalLisp(c.cdr.car))); },
 	"quote": function(c) { return c; },
 	"rand": function(c) { return rand(c, 2147483648); },
 	"randfloat": function(c) { return rand(c); },	// not std. PicoLisp
