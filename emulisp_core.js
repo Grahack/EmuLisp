@@ -957,7 +957,7 @@ var coreFunctions = {
 			c = (c.cdr instanceof Cell) ? c.cdr.cdr : NIL;
 		}
 		return v;
-	},	
+	},
 	"setq": function(c) {
 		var v = NIL;
 		while (c instanceof Cell) {
