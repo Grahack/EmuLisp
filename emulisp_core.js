@@ -966,7 +966,7 @@ var coreFunctions = {
 			c = (c.cdr instanceof Cell) ? c.cdr.cdr : NIL;
 		}
 		return v;
-	},	
+	},
 	"sort": function(c) {
 		var lst = evalLisp(c.car);
 		if (lst instanceof Cell) {
