@@ -1277,6 +1277,7 @@ var coreFunctions = {
 		return y.car;
 	},
 	"setq": function(c) {
+		console.log("--- setq is altering the state named: " + cst.name);
 		var v = NIL;
 		while (c instanceof Cell) {
 			v = (c.cdr instanceof Cell) ? evalLisp(c.cdr.car) : NIL;

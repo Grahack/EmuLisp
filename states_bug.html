@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Re-init bug</title>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="emulisp_core.js" type="text/javascript"></script>
+</head>
+<body>
+<pre>
+Ctrl + Enter please.
+Observe in the JS console that the value of x is changed in the
+'backup state' even though the current state is the one named
+'clone state' (logged from "setq" in emulisp_core.js).
+It won't happen if you comment out this line:
+EMULISP_CORE.eval('x');
+
+Then Ctrl + Enter again please.
+The state should be initialised at each execution, but:
+a is reset to NIL
+x is not reset to NIL
+This is because the 'backup state' was altered.
+</pre>
+<div id="script-container">
+    <textarea id="script-editor" cols="80" rows="6" spellcheck="false">
+(println "a:" a)
+(setq a 1)
+(println a)
+(println "x:" x)
+(setq x 1)
+(println x)
+    </textarea>
+    <div id="display-target">&nbsp;</div>
+</div>
+<script>
+EMULISP_CORE.eval('x');
+
+// Keep a state where microalg is loaded.
+//var backup_state = EMULISP_CORE.currentState();
+var backup_state = jQuery.extend(true, {}, EMULISP_CORE.currentState());
+
+function stdPrint(text) {
+    var target = $('#display-target');
+    target.html(target.html() + text);
+}
+
+var editor = $('#script-editor');
+editor.keydown(function (e) {
+    if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
+        var clone_state = jQuery.extend(true, {}, backup_state);
+        clone_state.name = "clone_state";
+        EMULISP_CORE.init(clone_state);
+        // Process src.
+        $('#display-target').html('&nbsp;');
+        var src = editor.val();
+        if (backup_state.iSym['x']) {
+            console.log("x in backup_state before eval");
+            console.log("-> " + backup_state.iSym['x'].car.toString());
+        } else {
+            console.log("--- no x in backup_state");
+        }
+        EMULISP_CORE.eval(src);
+        if (backup_state.iSym['x']) {
+            console.log("x in backup_state after eval (should have stayed at NIL)");
+            console.log("-> " + backup_state.iSym['x'].car.toString());
+        } else {
+            console.log("--- no x in backup_state");
+        }
+    }
+});
+editor.focus();
+</script>
+<div>
+<p>The following was a quick test (JS session) to check non reference between clones.</p>
+<pre>
+> var o1 = {a:1};
+undefined
+> o1.a;
+1
+> var o2 = jQuery.extend(true, {}, o1);
+undefined
+> o2.a;
+1
+> o1.a = 2;
+2
+> o1.a;
+2
+> o2.a;
+1
+</pre>
+</div>
+</body>
+</html>
