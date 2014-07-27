@@ -1778,6 +1778,29 @@ var pub = {
 
 	currentState: function() { return cst; },
 
+	cloneState: function() {
+        var clone = {};
+        // jQuery clone
+        if (false) {
+        jQuery.extend(true, clone, cst);
+        }
+        // http://stackoverflow.com/questions/9382167/serializing-object-that-contains-cyclic-object-value
+        if (false) {
+        var seen = [];
+        var stringified = JSON.stringify(cst, function(key, val) {
+            if (val != null && typeof val == "object") {
+                if (seen.indexOf(val) >= 0) return;
+                seen.push(val)
+            }
+            return val;
+        });
+        clone = $.parseJSON(stringified);
+        }
+        // https://github.com/douglascrockford/JSON-js/blob/master/cycle.js
+        return cst;
+        return JSON.decycle(clone);
+    },
+
 	forSymbolWithNameDefineFun: function(name, jsFn) {
 		if (name in gEmptyObj) throw new Error(newErrMsg(JS_RESERVED, name));
 		var sym = new Symbol(name, jsFn);

@@ -4,6 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Re-init bug</title>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="cycle.js" type="text/javascript"></script>
     <script src="emulisp_core.js" type="text/javascript"></script>
 </head>
 <body>
@@ -37,7 +38,7 @@ EMULISP_CORE.eval('x');
 
 // Keep a state where microalg is loaded.
 //var backup_state = EMULISP_CORE.currentState();
-var backup_state = jQuery.extend(true, {}, EMULISP_CORE.currentState());
+var backup_state = EMULISP_CORE.cloneState();
 
 function stdPrint(text) {
     var target = $('#display-target');
