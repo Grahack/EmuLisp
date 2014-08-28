@@ -1,4 +1,4 @@
-# 26jun14jk
+# 21aug14jk
 
 (let (Goods 0 Bads 0)
 	(mapc
@@ -130,14 +130,22 @@
 			'(= '(NIL (NIL)) (let S NIL (list (push 'S) S)))
 			'(= '((4 3 . 1) 2) (let L (1 2) (push L 3 4) L))
 			'(= "(\"(1 2)\" \"(3 4)\")" (sym (list (sym '(1 2)) (sym '(3 4)))))
-			'(= NIL (or))
+			'(= 4 (and (= 2 2) (= 3 3) 4))
+			'(= (3 NIL 3) (list (and (= 2 2) 3) (and) @))
 			'(= NIL (or (= 2 3) (= 3 4)))
-			'(= (3 3) (list (or (= 2 3) 3 (= 4 5)) @))
+			'(= (3 NIL 3) (list (or (= 2 3) 3 (= 4 5)) (or) @))
 			'(= T (or (= *EMUENV "browser") (= *EMUENV "nodejs") (sym? *OS)))
 			'(= '(T T NIL T T T) (mapcar bool (list (or 1 2) T NIL '(4 5) 'foo "bar")))
 			'(= '(3 NIL NIL NIL NIL NIL) (mapcar num? (list (+ 1 2) T NIL '(4 5) 'foo "bar")))
 			'(= '(NIL NIL NIL NIL NIL "bar") (mapcar str? (3 T NIL '(4 5) 'foo "bar")))
 			'(= '(NIL T T NIL NIL T) (mapcar sym? (3 T NIL '(4 5) 'foo "bar")))
+			'(= (1814 5 17) (date (date 1814 5 17)))
+			'(= (1461 NIL 36524 NIL) (list (date 4 2 29) (date 4 2 30) (date 100 2 28) (date 100 2 29)))
+			'(= 3 (num? (cadr (date 1))))
+			'(= '(NIL (2 3) NIL (6 7) NIL) (split (range 1 8) 1 4 5 8))
+			'(= '((1) (3)) (split (1 2 3) 0 (+ 1 1)))
+			'(= '((1 2 3)) (split (1 2 3) 4))
+			'(= '("Do" "Re" "Mi") (mapcar pack (split (chop "Do Re Mi") " ")))
 			
 			# circular lists
 			'(= 1 (caddr (1 2 .)))

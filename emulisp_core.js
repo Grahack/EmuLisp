@@ -1,10 +1,13 @@
-/* 26jun14jk
+/* 21aug14jk
  * (c) Jon Kleiser
  */
 
+"use strict";
+
 var EMULISP_CORE = (function () {
 
-var VERSION = [2, 0, 1, 0],
+var VERSION = [2, 0, 1, 1],
+	MONLEN = [31, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
 	BOXNAT_EXP = "Boxed native object expected",
 	BOOL_EXP = "Boolean expected", CELL_EXP = "Cell expected", LIST_EXP = "List expected",
 	NUM_EXP = "Number expected", SYM_EXP = "Symbol expected", VAR_EXP = "Variable expected",
@@ -286,7 +289,7 @@ function prepareNewState(optionalState) {
 		compExprArr: [],	// sort expression stack
 		evFrames: NIL,
 		trcIndent: "",
-		startupMillis: (new Date()).getTime()
+		startupMillis: Date.now()
 	};
 	QUOTE = getSymbol("quote");
 	getSymbol("*EMUENV").setVal(new Symbol(emuEnv()));
@@ -338,6 +341,13 @@ function cdr(c) { if ((c instanceof Cell) || (c === NIL)) return c.cdr;
 function numeric(val) {
 	if (val instanceof Number) return val;
 	throw new Error(newErrMsg(NUM_EXP, val));
+}
+
+function validTime1970(y, m, d) {
+	numeric(y); numeric(m); numeric(d);
+	if (m<1 || m>12 || d<1 || d>MONLEN[m] && (m!=2 || d!=29 || y%4!=0 || y%100==0 && y%400!=0)) return null;
+	var ms1970 = Date.UTC(y, m - 1, d);
+	return (y >= 100) ? ms1970 : ms1970 - 59958144000000;
 }
 
 function nth(lst, n) {
@@ -423,7 +433,7 @@ function div(c, divFn) {
 }
 
 function eqVal(a, b) {
-	//alert("eqVal() " + a + ", " + b);
+	//console.log("eqVal(%s, %s)", a, b);
 	if (a.TYPEVAL === b.TYPEVAL) {
 		if (a === b) return true;
 		if (a.TYPEVAL === CELLTYPE) {
@@ -628,6 +638,9 @@ CompExpr.prototype.evalTrue = function(a, b) {
 function lispFnOrder(a, b) { return cst.compExprArr[0].evalTrue(a, b) ? -1 : 1; }
 
 var coreFunctions = {
+	"and": function(c) { var v = NIL; while (c instanceof Cell) { v = evalLisp(c.car);
+			if (!aTrue(v)) return NIL; c = c.cdr; } return v;
+	},
 	"apply": function(c) { return applyFn(c.car, evalLisp(c.cdr.car), c.cdr.cdr); },
 	"arg": function(c) { var n = 0, f = cst.evFrames.car;
 		if (c !== NIL) {
@@ -637,8 +650,8 @@ var coreFunctions = {
 		return f.car;
 	},
 	"args": function(c) { return (cst.evFrames.car.cdr === NIL) ? NIL : T; },
-	"bench": function(c) { var t0 = (new Date()).getTime(), r = prog(c);
-		_stdPrint(((new Date()).getTime() - t0) / 1000 + " sec\n"); return r;
+	"bench": function(c) { var t0 = Date.now(), r = prog(c);
+		_stdPrint((Date.now() - t0) / 1000 + " sec\n"); return r;
 	},
 	"bool": function(c) { return (evalLisp(c.car) === NIL) ? NIL : T; },
 	"box": function(c) { return box(evalLisp(c.car)); },
@@ -674,6 +687,27 @@ var coreFunctions = {
 		c = c.cdr.cdr;
 		while (c !== NIL) { var d = new Cell(t.cdr, evalLisp(c.car)); t.cdr = d; t = d; c = c.cdr; }
 		return r;
+	},
+	"date": function(c) { var MSPD = 86400000, D1970 = 719469, a1 = evalLisp(c.car), ms1970;
+		if ((c === NIL) || (a1 === T)) {
+			ms1970 = Date.now();
+			if (c === NIL) ms1970 -= (new Date()).getTimezoneOffset() * 60000;	// local (non-UTC)
+			return new Number(Math.floor(ms1970 / MSPD) + D1970);
+		}
+		if (a1 instanceof Cell) {
+			ms1970 = validTime1970(a1.car, a1.cdr.car,  a1.cdr.cdr.car);
+			return (ms1970 !== null) ? new Number(ms1970 / MSPD + D1970) : NIL;
+		}
+		if (a1 instanceof Number) {
+			if (c.cdr !== NIL) {
+				ms1970 = validTime1970(a1, evalLisp(c.cdr.car),  evalLisp(c.cdr.cdr.car));
+				return (ms1970 !== null) ? new Number(ms1970 / MSPD + D1970) : NIL;
+			}
+			var d = new Date((a1 - D1970) * MSPD);
+			return new Cell(new Number(d.getUTCFullYear()), new Cell(new Number(d.getUTCMonth() + 1),
+				new Cell(new Number(d.getUTCDate()), NIL)));
+		}
+		return NIL;
 	},
 	"de": function(c) { var old = c.car.getVal();
 		setSymbolValue(c.car, c.cdr);
@@ -840,7 +874,6 @@ var coreFunctions = {
 		if (! (fn instanceof Symbol)) fn = box(fn);
 		mkNew();
 		while (ci.car !== NIL) { var cj = ci; mkNew();
-			//if (!confirm(lispToStr(cj))) throw new Error("mapcar aborted");
 			while (cj !== NIL) { link(cj.car.car); cj.car = cj.car.cdr; cj = cj.cdr; }
 			link(evalLisp(new Cell(fn, unevalArgs(mkResult()))));
 		}
@@ -878,7 +911,7 @@ var coreFunctions = {
 	"prinl": function(c) {
 		c = evalArgs(c); _stdPrint(c.toValueString() + "\n");
 		while (c.cdr !== NIL) { c = c.cdr; }; return c.car;
-	},	
+	},
 	"print": function(c) { return printx(c, ""); },
 	"println": function(c) { return printx(c, "\n"); },
 	"printsp": function(c) { return printx(c, " "); },
@@ -984,6 +1017,20 @@ var coreFunctions = {
 		}
 		return lst;
 	},
+	"split": function(c) {
+		var lst = evalLisp(c.car);
+		if (lst instanceof Cell) {
+			var x = c.cdr, arr = []; while (x !== NIL) { arr.push(evalLisp(x.car)); x = x.cdr; }
+			mkNew(); mkNew();
+			do { var i; for (i=0; i<arr.length && !eqVal(lst.car, arr[i]); i++) {}
+				if (i<arr.length) { link(mkResult()); mkNew(); } else link(lst.car);
+				lst = lst.cdr;
+			} while (lst instanceof Cell);
+			link(mkResult());
+			return mkResult();
+		}
+		return lst;
+	},
 	"str": function(c) {
 		var cv = evalLisp(c.car);
 		if (cv instanceof Symbol) {
@@ -1043,8 +1090,8 @@ var coreFunctions = {
 		setSymbolValue(s, f);
 		return s;
 	},
-	"usec": function(c) { return new Number(((new Date()).getTime() - cst.startupMillis) * 1000); },
-	"val": function(c) { return evalLisp(c.car).car; },
+	"usec": function(c) { return new Number((Date.now() - cst.startupMillis) * 1000); },
+	"val": function(c) { var x = evalLisp(c.car); needVar(c, x); return x.car; },
 	"version": function(c) { if (!aTrue(evalLisp(c.car))) _stdPrint(VERSION.join(".") + " JS\n");
 		mkNew(); for (var i=0; i<VERSION.length; i++) { link(VERSION[i]); }; return mkResult(); },
 	"while": function(c) {
