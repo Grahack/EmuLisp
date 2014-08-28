@@ -1350,9 +1350,9 @@ function symbolRefUrl(symbolName) {
 	}
 }
 
-var pub = {	
+var pub = {
 	init: function(optionalState) { prepareNewState(optionalState); },
-	
+
 	currentState: function() { return cst; },
 
 	forSymbolWithNameDefineFun: function(name, jsFn) {
@@ -1360,13 +1360,13 @@ var pub = {
 		var sym = new Symbol(name, jsFn);
 		cst.iSym[name] = sym;
 	},
-	
+
 	forSymbolWithNamePushValue: function(name, value) {
 		var sym = getSymbol(name);
 		sym.pushValue(value);
 		return sym;
 	},
-	
+
 	forSymbolWithNameSetValue: function(name, value) {
 		return getSymbol(name).setVal(value);
 	},
@@ -1376,14 +1376,14 @@ var pub = {
 		ts.obj = obj;
 		return ts;
 	},
-	
+
 	isCell: function(obj) { return (obj instanceof Cell); },
 	isSymbol: function(obj) { return (obj instanceof Symbol); },
-	
+
 	evalArgs: evalArgs, evalLisp: evalLisp, lispToStr: lispToStr, loadLisp: loadLisp, newErrMsg: newErrMsg,
 	newTransSymbol: newTransSymbol, prog: prog, valueToStr: valueToStr, Params: Params,
 	NIL: NIL, T: T,
-	
+
 	eval: function(code) {
 		var result = prog(parseList(new Source(code)));
 		A3.setVal(A2.getVal()); A2.setVal(A1.getVal()); A1.setVal(result);
