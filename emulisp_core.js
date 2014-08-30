@@ -4,6 +4,12 @@
 
 "use strict";
 
+// http://usejsdoc.org/about-getting-started.html
+// http://usejsdoc.org/howto-commonjs-modules.html
+// EMULISP_CORE should be renamed to exports
+// see http://wiki.commonjs.org/wiki/Modules/1.1
+
+/** @module EMULISP_CORE */
 var EMULISP_CORE = (function () {
 
 var VERSION = [2, 0, 3, 0],
