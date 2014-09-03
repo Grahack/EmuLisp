@@ -1,4 +1,4 @@
-/* 21aug14jk
+/* 01sep14jk
  * (c) Jon Kleiser
  */
 
@@ -603,6 +603,7 @@ function unevalArgs(lst) {
 }
 
 function applyFn(rawFn, lst, more) {
+	if (! (lst instanceof Cell)) lst = NIL;
 	if (more !== NIL) {
 		mkNew(); do { link(evalLisp(more.car)); more = more.cdr; } while (more !== NIL);
 		cst.mk[0].t.cdr = lst; lst = mkResult();
@@ -615,6 +616,19 @@ function printx(c, x) { var arr = [];
 	c = evalArgs(c); arr.push(lispToStr(c.car));
 	while (c.cdr !== NIL) { c = c.cdr; arr.push(lispToStr(c.car)); }
 	_stdPrint(arr.join(" ") + x); return c.car;
+}
+
+function rand(c, picoSize) {
+	var r = Math.random();	// range 0.0 .. 1.0
+	if (c === NIL) {
+		if (picoSize) r = Math.floor((2 * r - 1) * picoSize);
+		return new Number(r);
+	}
+	var n = evalLisp(c.car);
+	if (n === T) return (r < 0.5) ? NIL : T;
+	r = (-numeric(n) + numeric(evalLisp(c.cdr.car)) + (picoSize ? 1 : 0)) * r + n;
+	if (picoSize) r = Math.floor(r);
+	return new Number(r);
 }
 
 function ascending(a, b) { return ltVal(a, b) ? -1 : eqVal(a, b) ? 0 : 1; }
@@ -648,6 +662,7 @@ var coreFunctions = {
 		return f.car;
 	},
 	"args": function(c) { return (cst.evFrames.car.cdr === NIL) ? NIL : T; },
+	"atom": function(c) { return (evalLisp(c.car) instanceof Cell) ? NIL : T; },
 	"bench": function(c) { var t0 = Date.now(), r = prog(c);
 		_stdPrint((Date.now() - t0) / 1000 + " sec\n"); return r;
 	},
@@ -960,12 +975,8 @@ var coreFunctions = {
 		throw new Error(newErrMsg(VAR_EXP, s));
 	},
 	"quote": function(c) { return c; },
-	"rand": function(c) { var r = Math.random();
-		if (c === NIL) return new Number(r);	// range 0.0 .. 1.0
-		var n = evalLisp(c.car);
-		if (n === T) return (r < 0.5) ? NIL : T;
-		return new Number((-numeric(n) + numeric(evalLisp(c.cdr.car))) * r + n);
-	},
+	"rand": function(c) { return rand(c, 2147483648); },
+	"randfloat": function(c) { return rand(c); },	// not std. PicoLisp
 	"range": function(c) {
 		var n = numeric(evalLisp(c.car)), n2 = numeric(evalLisp(c.cdr.car)), s = evalLisp(c.cdr.cdr.car);
 		if (s === NIL) { s = 1; } else if (numeric(s) <= 0) throw new Error(newErrMsg(BAD_ARG, s));
@@ -1014,6 +1025,12 @@ var coreFunctions = {
 			while (arr.length > 0) lst = new Cell(arr.pop(), lst);
 		}
 		return lst;
+	},
+	"space": function(c) { var n = 1, s;
+		if (c.car !== NIL) n = numeric(evalLisp(c.car));
+		for (s = ""; s.length < n; s += " ") {}
+		if (s > "") _stdPrint(s);
+		return new Number(n);
 	},
 	"split": function(c) {
 		var lst = evalLisp(c.car);

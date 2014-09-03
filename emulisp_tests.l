@@ -1,4 +1,4 @@
-# 21aug14jk
+# 02sep14jk
 
 (let (Goods 0 Bads 0)
 	(mapc
@@ -97,6 +97,10 @@
 			'(= 15 (let (L (1 2 3) X 4) (apply + L X (+ 2 3))))
 			'(= '(NIL 3) (let N 0 (list (+ (inc 'N) (inc 'N) (inc 'N) NIL (inc 'N)) N)))
 			'(= '(NIL 4) (let N 0 (list (apply + (list (inc 'N) (inc 'N) (inc 'N) NIL (inc 'N))) N)))
+			'(= '(NIL) (apply list 3))
+			'(= '(b c) (apply list 'a 'b 'c))
+			'(= (123 123) (apply '(@ (list (next) (arg))) (123)))
+			'(= '(NIL T) (let F '(@ (args)) (list (F) (F NIL))))
 			'(= 1350 ('(@ (pass + 9 8 7)) (+ 2 3) (- 7 1) 1234 (* 9 9)))
 			#'(= '(B\C\D^E "B\\C\\D\^E" 7) (let A 'B\\C\\D\^E (list A (pack A) (length A))))
 			'(= '("B\\C\\D\^E" "B\\C\\D\^E" 7) (let A "B\\C\\D\^E" (list A (pack A) (length A))))
@@ -135,6 +139,7 @@
 			'(= NIL (or (= 2 3) (= 3 4)))
 			'(= (3 NIL 3) (list (or (= 2 3) 3 (= 4 5)) (or) @))
 			'(= T (or (= *EMUENV "browser") (= *EMUENV "nodejs") (sym? *OS)))
+			'(= '(T T T NIL T T) (mapcar atom (list (or 1 2) T NIL '(4 5) 'foo "bar")))
 			'(= '(T T NIL T T T) (mapcar bool (list (or 1 2) T NIL '(4 5) 'foo "bar")))
 			'(= '(3 NIL NIL NIL NIL NIL) (mapcar num? (list (+ 1 2) T NIL '(4 5) 'foo "bar")))
 			'(= '(NIL NIL NIL NIL NIL "bar") (mapcar str? (3 T NIL '(4 5) 'foo "bar")))
@@ -146,6 +151,10 @@
 			'(= '((1) (3)) (split (1 2 3) 0 (+ 1 1)))
 			'(= '((1 2 3)) (split (1 2 3) 4))
 			'(= '("Do" "Re" "Mi") (mapcar pack (split (chop "Do Re Mi") " ")))
+			# The following two rand test may theoretically fail
+			'(= (-5 9) (let (R NIL Lo T Hi NIL)
+				(do 1000 (setq R (rand -5 9)) (if (< R Lo) (setq Lo R)) (if (> R Hi) (setq Hi R))) (list Lo Hi)))
+			#'(= (NIL T) (let L (make (do 100 (link (rand T)))) (list (apply min L) (apply max L))))
 			
 			# circular lists
 			'(= 1 (caddr (1 2 .)))
