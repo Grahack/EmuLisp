@@ -30,6 +30,11 @@ function getFileSync(fileUrl) {
 
 var NILTYPE = 0, NUMBERTYPE = 1, SYMBOLTYPE = 2, CELLTYPE = 3, TRUETYPE = 4;
 
+function Number(init) {
+	this.val = Math.round(parseFloat(init));
+	this.toString = function() { return ""+this.val; }
+	this.valueOf = function() { return this.val; }
+}
 Number.prototype.TYPEVAL = NUMBERTYPE;
 
 function lispToStr(x) {
@@ -436,6 +441,9 @@ function eqVal(a, b) {
 	//console.log("eqVal(%s, %s)", a, b);
 	if (a.TYPEVAL === b.TYPEVAL) {
 		if (a === b) return true;
+		if (a.TYPEVAL === NUMBERTYPE) {
+			return a.val == b.val;
+		}
 		if (a.TYPEVAL === CELLTYPE) {
 			return eqVal(a.car, b.car) ? eqVal(a.cdr, b.cdr) : false;
 		}
@@ -628,7 +636,7 @@ function rand(c, picoSize) {
 	}
 	var n = evalLisp(c.car);
 	if (n === T) return (r < 0.5) ? NIL : T;
-	r = (-numeric(n) + numeric(evalLisp(c.cdr.car)) + (picoSize ? 1 : 0)) * r + n;
+	r = (-n.val + numeric(evalLisp(c.cdr.car)).val + (picoSize ? 1 : 0)) * r + n.val;
 	if (picoSize) r = Math.floor(r);
 	return new Number(r);
 }
@@ -824,13 +832,13 @@ var coreFunctions = {
 	"inc": function(c) {
 		if (c === NIL) return NIL;
 		var ns = evalLisp(c.car);
-		if (ns instanceof Number) return new Number(ns + 1);
-		var v = new Number(ns.getVal() + ((c.cdr !== NIL) ? numeric(evalLisp(c.cdr.car)) : 1));
+		if (ns instanceof Number) return new Number(ns.val + 1);
+		var v = new Number(ns.getVal().val + ((c.cdr !== NIL) ? numeric(evalLisp(c.cdr.car)).val : 1));
 		ns.setVal(v); return v;
 	},
 	"le0": function(c) { var cv = evalLisp(c.car);
 		return ((cv instanceof Number) && (cv <= 0)) ? cv : NIL; },
-	"length": function(c) { var cv = evalLisp(c.car), v = 0;
+	"length": function(c) { var cv = evalLisp(c.car), v = new Number(0);
 		if (cv instanceof Number) { v = cv.toString().length; }
 		else if (cv instanceof Symbol) { v = cv.lock ? cv.toValueString().length :
 			(cv.name === null) ? 0 : cv.name.length; }
@@ -981,9 +989,9 @@ var coreFunctions = {
 	"randfloat": function(c) { return rand(c); },	// not std. PicoLisp
 	"range": function(c) {
 		var n = numeric(evalLisp(c.car)), n2 = numeric(evalLisp(c.cdr.car)), s = evalLisp(c.cdr.cdr.car);
-		if (s === NIL) { s = 1; } else if (numeric(s) <= 0) throw new Error(newErrMsg(BAD_ARG, s));
-		if (n > n2) s = -s;
-		mkNew(); do { link(n); n = new Number(n + s); } while ((s > 0) ? (n <= n2) : (n >= n2));
+		if (s === NIL) { s = new Number(1); } else if (numeric(s) <= 0) throw new Error(newErrMsg(BAD_ARG, s));
+		if (n > n2) s.val = -s.val;
+		mkNew(); do { link(n); n = new Number(n.val + s.val); } while ((s > 0) ? (n <= n2) : (n >= n2));
 		return mkResult();
 	},
 	"rest": function(c) { return cst.evFrames.car.cdr; },
@@ -1142,18 +1150,18 @@ var coreFunctions = {
 	},
 	"+": function(c) { var t = 0;
 		do { var v = evalLisp(c.car); if (v === NIL) return NIL;
-			t += numeric(v); c = c.cdr; } while (c instanceof Cell); return new Number(t);
+			t += numeric(v).val; c = c.cdr;} while (c instanceof Cell); return new Number(t);
 	},
 	"-": function(c) { var t = evalLisp(c.car);
 		if (t === NIL) return NIL;
 		t = numeric(t); c = c.cdr;
 		if (c === NIL) return new Number(-t);
 		do { var v = evalLisp(c.car); if (v === NIL) return NIL;
-			t -= numeric(v); c = c.cdr; } while (c instanceof Cell); return new Number(t);
+			t -= numeric(v).val; c = c.cdr; } while (c instanceof Cell); return new Number(t);
 	},
 	"*": function(c) { var t = 1;
 		do { var v = evalLisp(c.car); if (v === NIL) return NIL;
-			t *= numeric(v); c = c.cdr; } while (c instanceof Cell); return new Number(t);
+			t *= numeric(v).val; c = c.cdr; } while (c instanceof Cell); return new Number(t);
 	},
 	"/": function(c) { return div(c, function(a, b) { return a / b; }); },	// floating point division
 	"/t": function(c) { return div(c, function(a, b) { var d = a / b;
