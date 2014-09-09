@@ -66,6 +66,8 @@
 			'(= (1 2 3) (mapcar (cadr '(foo length)) (list 1 12 123)))
 			'(= T (= (mapcar '((S V) (put S 'prop V)) '(A B C) (2 4 6)) (mapcar '((S) (get S 'prop)) '(A B C))))
 			'(= (22 11) (let X 11 (list (let (X 22 Y 33) 1 2 X) X)))
+			'(= 'x (any "x"))
+			'(= '1 (any "1"))
 			'(= '(a (1 2) b) (str "a (1 2) b"))
 			'(= "1 (+ 2 2) 3" (str (1 (+ 2 2) 3)))
 			'(= (3 4) (tail (+ 1 1) (cdr (1 2 3 4))))
