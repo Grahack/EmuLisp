@@ -1,4 +1,4 @@
-# 02sep14jk
+# 15sep14jk
 
 (let (Goods 0 Bads 0)
 	(mapc
@@ -68,6 +68,7 @@
 			'(= (22 11) (let X 11 (list (let (X 22 Y 33) 1 2 X) X)))
 			'(= '(a (1 2) b) (str "a (1 2) b"))
 			'(= "1 (+ 2 2) 3" (str (1 (+ 2 2) 3)))
+			'(= '(NIL NIL (a b c) "foo") (mapcar any '("" "()" "(a # Comment^Jb c)" "\"foo\"")))
 			'(= (3 4) (tail (+ 1 1) (cdr (1 2 3 4))))
 			'(= 0 (let N 0 (tail 0 (1 2 (inc 'N))) N))
 			'(= 0 (let N 0 (tail 2 (1 2 (inc 'N))) N))
@@ -91,6 +92,8 @@
 			'(= (4 (1 2 3 4)) (let A (1 2 3) (list (queue 'A 4) A)))
 			'(= (4 ((1 2 3 4) 5)) (let A '((1 2 3) 5) (list (queue A 4) A)))
 			'(= '((1 2 3 4) 4) (list (make (link 1 2) (setq S (link 3 4))) S))
+			'(= (1 (2 3) 4) (make (link 1 (make (link 2 3)) 4)))
+			'(= (1 2 3 4 5) (make (link 1) (mapcar link (2 3 4)) (link 5)))
 			'(= 10 (let (F '+ X 4 Y 2) (apply F (list 3 X) 1 Y)))
 			'(= '((apply + (3 4) 1 2) 10) (let (A '(apply + (3 4) 1 2) R (eval A)) (list A R)))
 			'(= 27 (apply '((X Y Z) (* X (+ Y Z))) (3 4 5)))
@@ -151,10 +154,20 @@
 			'(= '((1) (3)) (split (1 2 3) 0 (+ 1 1)))
 			'(= '((1 2 3)) (split (1 2 3) 4))
 			'(= '("Do" "Re" "Mi") (mapcar pack (split (chop "Do Re Mi") " ")))
-			# The following two rand test may theoretically fail
+			'(= 3 (index '(5 6) '((1 2) (3 4) (5 6) (7 8))))
+			'(= NIL (index 33 (11 22 34 .)))
+			'(= "7fach" (pre? (+ 3 4) (pack "7f" "ach")))
+			'(= 'abcd (pre? "ab" 'abcd))
+			'(= NIL (pre? "a" "ba"))
+			'(= "abcd" (pre? NIL "abcd"))
+			'(= T (pre? T T))
+			# The following two pre? tests will fail in Ersatz
+			'(= "123" (pre? 12 123))
+			'(= "123" (pre? (1 2 3) (1 2 3)))
+			# The following two rand tests may theoretically fail
 			'(= (-5 9) (let (R NIL Lo T Hi NIL)
 				(do 1000 (setq R (rand -5 9)) (if (< R Lo) (setq Lo R)) (if (> R Hi) (setq Hi R))) (list Lo Hi)))
-			#'(= (NIL T) (let L (make (do 100 (link (rand T)))) (list (apply min L) (apply max L))))
+			'(= '(NIL T) (let L () (do 100 (let R (rand T) (ifn (index R L) (setq L (cons R L))))) (sort L)))
 			
 			# circular lists
 			'(= 1 (caddr (1 2 .)))

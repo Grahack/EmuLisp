@@ -1,70 +1,134 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <title>emulisp-console</title>
-    <script src="emulisp_core.js" type="text/javascript"></script>
-    <script src="emulisp_js.js" type="text/javascript"></script>
-    <script src="emulisp_cv.js" type="text/javascript"></script>
-    <script type="text/javascript">
-var e = EMULISP_CORE.eval;  // shorthand for use in Console
-
-function evalSrc() {
-    console.log("-> %s", EMULISP_CORE.eval(document.getElementById("src").value));
+	<meta charset="utf-8" />
+	<title>emulisp-console2</title>
+	<script src="src/core2.js" type="text/javascript"></script>
+	<script src="src/js2.js" type="text/javascript"></script>
+	<script src="src/cv2.js" type="text/javascript"></script>
+	<style type="text/css">
+body {
+	margin: 16px;
+	background-color: #eed;
+}
+/* The console container element */
+#console {
+	position: relative;
+	width: 890px;
+	height: 492px;
+	background-color: #222;
+}
+#console * {
+	font: 18px 'dejavu sans mono', menlo, monaco, monospace;
+	line-height: 135%;
+}
+/* The inner console element */
+.jqconsole {
+	padding: 10px;
+}
+/* The welcome message */
+.jqconsole-header {
+	color: white;
+}
+/* The cursor */
+.jqconsole-cursor {
+	background-color: #b90;
+}
+/* The cursor color when the console looses focus */
+.jqconsole-blurred .jqconsole-cursor {
+	background-color: #666;
+}
+/* The current prompt text color */
+.jqconsole-prompt {
+	color: #0d0;
+}
+/* The command history */
+.jqconsole-old-prompt {
+	color: #0b0;
+	font-weight: normal;
+}
+/* The text color when in input mode */
+.jqconsole-input {
+	color: #dd0;
+}
+/* Previously entered input */
+.jqconsole-old-input {
+	color: #bb0;
+	font-weight: normal;
+}
+/* The text color of the output */
+.jqconsole-output {
+	color: white;
+}
+/* The text color of the warning */
+.jqconsole-warning {
+	color: yellow;
+}
+/* The text color of the error output */
+.jqconsole-error {
+	color: red;
+}
+/* Hilite matching () */
+.paren {
+	color: #f0f;
 }
 
-function clearCanvas(cv) {
-    if (cv && cv.getContext) {
-        cv.width = cv.width;        // resetting the canvas
-        cv.getContext("2d").clearRect(0, 0, cv.width, cv.height);
-    }
+div#info p {
+	margin: 6px 0 0 0;
+	font: 13px Verdana, sans-serif;
 }
-    </script>
-    <style type="text/css">
-* {
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-}
-textarea#src {
-    width: 50em;
-    padding-left: 6px;
-    font: 15px dejavu sans mono, monospace;
-    -moz-tab-size: 3;
-    tab-size: 3;
-    margin-bottom: 0;
-}
-canvas {
-    border: 1px solid gray;
-}
-input#dummy {
-    margin-left: 10em;
-}
-    </style>
+	</style>
 </head>
 <body>
-<textarea id="src" rows="16">
-(de fibo (N)
-    (if (>= 2 N)
-        1
-        (+ (fibo (dec N)) (fibo (- N 2))) ) )
-
-#(bench (fibo 30))
-#(js:alert "Hello")
-
-(cv:setctx2d "testCanvas")
-(cv:font "18px sans-serif")
-(cv:fillText "Hello Lisper!" 50 40)
-(cv:strokeStyle "#6060f0")
-(cv:beginPath)
-(cv:arc 150 150 100 0 3.14 T)
-(cv:closePath)
-(cv:stroke)
-</textarea>
-<canvas id="testCanvas" width="300" height="300" onClick="clearCanvas(this);"></canvas>
-<p>
-    <input type="button" value="Evaluate" onClick="evalSrc();" /> (see console)
-    <input type="button" value="Dummy" id="dummy" />
-</p>
+	<div id="console"></div>
+	<div id="info">
+		<p>EmuLisp is a <a href="http://picolisp.com" target="_blank">PicoLisp</a> emulator.
+		It covers only a tiny subset of PicoLisp.</p>
+		<p>This console is implemented using <a href="https://github.com/replit/jq-console" target="_blank">jq-console</a>
+		and <a href="http://jquery.com" target="_blank">jQuery</a>.</p>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"
+		type="text/javascript" charset="utf-8"></script>
+	<script src="src/jqconsole.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+$(function () {
+	var jqconsole = $("#console").jqconsole("Welcome to EmuLisp\n", ": ");
+	stdPrint = function(text) { jqconsole.Write(text, "jqconsole-output"); }
+	warn = function(text) { jqconsole.Write(text + "\n", "jqconsole-warning"); }
+	
+	// Move to line start Ctrl-A
+	jqconsole.RegisterShortcut("A", function() {
+		jqconsole.MoveToStart();
+		//handler();
+	});
+	
+	// Move to line start Ctrl-E
+	jqconsole.RegisterShortcut("E", function() {
+		jqconsole.MoveToEnd();
+		//handler();
+	});
+	
+	jqconsole.RegisterMatching("(", ")", "paren");
+	
+	jqconsole.SetHistory(['(load "lib/test.l")']);
+	
+	var startPrompt = function () {
+		// Start the prompt with history enabled
+		jqconsole.Prompt(true, function (input) {
+			try {
+				if (input.trim().length > 0) {
+					// Output result with the class jqconsole-output
+					jqconsole.Write("-> " + EMULISP_CORE.eval(input) + "\n", "jqconsole-output");
+				}
+			} catch (e) {
+				jqconsole.Write(e.message + "\n", "jqconsole-error");
+			}
+			// Restart the prompt
+			startPrompt();
+		});
+	};
+	startPrompt();
+});
+	</script>
 </body>
 </html>
