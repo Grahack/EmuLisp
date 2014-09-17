@@ -343,7 +343,7 @@ function getString(str, editMode) {
 
 function newErrMsg(msg, badValue) {
 	getSymbol("*Msg").setVal(newTransSymbol(msg));
-	return (badValue === undefined) ? msg : lispToStr(badValue) + " -- " + msg;
+	return (badValue === undefined) ? msg + "" : lispToStr(badValue) + " -- " + msg;
 }
 
 function aTrue(val) { if (val !== NIL) { A1.setVal(val); return true; } else return false; }
@@ -401,7 +401,7 @@ function getAlg(c) {
 			} else {
 				s = NIL;
 			}
-		} else throw new Error(newErrMsg(SYM_EXP));
+		} else throw new Error(newErrMsg(SYM_EXP, s));
 		c = c.cdr;
 	}
 	return s;
