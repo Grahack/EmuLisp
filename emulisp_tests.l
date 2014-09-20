@@ -109,6 +109,8 @@
 			'(= (123 123) (apply '(@ (list (next) (arg))) (123)))
 			'(= '(NIL T) (let F '(@ (args)) (list (F) (F NIL))))
 			'(= 1350 ('(@ (pass + 9 8 7)) (+ 2 3) (- 7 1) 1234 (* 9 9)))
+			'(= 2 (% 51 7))
+			'(= 4 (% 51 21 5))
 			#'(= '(B\C\D^E "B\\C\\D\^E" 7) (let A 'B\\C\\D\^E (list A (pack A) (length A))))
 			'(= '("B\\C\\D\^E" "B\\C\\D\^E" 7) (let A "B\\C\\D\^E" (list A (pack A) (length A))))
 			'(= '(("B" "\\" "C" "\^" "D") ("B" "\\" "C" "\^" "D")) (list (chop 'B\\C\^D) (chop "B\\C\^D")))
