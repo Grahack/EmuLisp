@@ -31,7 +31,7 @@ function getFileSync(fileUrl) {
 		}
 		return req.responseText;
 	}
-	throw new Error("XMLHttpRequest status: " + req.status);
+	throw new Error("XMLHttpRequest status: " + req.status + " (looking for " + fileUrl + ")");
 }
 
 var NILTYPE = 0, NUMBERTYPE = 1, SYMBOLTYPE = 2, CELLTYPE = 3, TRUETYPE = 4;
