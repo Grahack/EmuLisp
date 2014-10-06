@@ -11,16 +11,38 @@ body {
 	margin: 16px;
 	background-color: #eed;
 }
+#main {
+	position: relative;
+	width: 890px;
+}
 /* The console container element */
 #console {
 	position: relative;
-	width: 890px;
+	width: 100%;
 	height: 492px;
 	background-color: #222;
 }
 #console * {
 	font: 18px 'dejavu sans mono', menlo, monaco, monospace;
+	font-weight: normal;
 	line-height: 135%;
+}
+#filedrop {
+	float: right;
+	position: relative;
+	top: 4px;
+	border: 1px solid #bba;
+	width: 80px;
+	height: 40px;
+	padding-top: 2px;
+	text-align: center;
+	font-size: 24px;
+	color: #ccb;
+	background-color: #ffe;
+	cursor: default;
+}
+#filedrop:hover {
+	color: #9c8;
 }
 /* The inner console element */
 .jqconsole {
@@ -45,7 +67,6 @@ body {
 /* The command history */
 .jqconsole-old-prompt {
 	color: #0b0;
-	font-weight: normal;
 }
 /* The text color when in input mode */
 .jqconsole-input {
@@ -54,7 +75,10 @@ body {
 /* Previously entered input */
 .jqconsole-old-input {
 	color: #bb0;
-	font-weight: normal;
+}
+/* The text color of browser event info */
+.jqconsole-event {
+	color: #aad;
 }
 /* The text color of the output */
 .jqconsole-output {
@@ -80,21 +104,78 @@ div#info p {
 	</style>
 </head>
 <body>
-	<div id="console"></div>
-	<div id="info">
-		<p>EmuLisp is a <a href="http://picolisp.com" target="_blank">PicoLisp</a> emulator.
-		It covers only a tiny subset of PicoLisp.</p>
-		<p>This console is implemented using <a href="https://github.com/replit/jq-console" target="_blank">jq-console</a>
-		and <a href="http://jquery.com" target="_blank">jQuery</a>.</p>
+	<div id="main">
+		<div id="console"></div>
+		<div id="filedrop" title="Drop Lisp or JavaScript files here">&#11015;</div>
+		<div id="info">
+			<p>EmuLisp is a <a href="http://picolisp.com" target="_blank">PicoLisp</a> emulator.
+			It covers only a tiny subset of PicoLisp.</p>
+			<p>This console is implemented using <a href="https://github.com/replit/jq-console" target="_blank">jq-console</a>
+			and <a href="http://jquery.com" target="_blank">jQuery</a>.</p>
+		</div>
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"
 		type="text/javascript" charset="utf-8"></script>
 	<script src="src/jqconsole.js" type="text/javascript" charset="utf-8"></script>
+	
 	<script type="text/javascript">
 $(function () {
+	var filedrop = document.getElementById("filedrop");
+	filedrop.ondragover = function() { return false; }
+	filedrop.ondragend = function() { return false; }
+	filedrop.ondrop = function(evt) {
+		evt.preventDefault();
+		if (typeof window.FileReader === "function") {
+			var srcFiles = [];
+			for (var i=0; i<evt.dataTransfer.files.length; i++) {
+				var f = evt.dataTransfer.files[i];
+				if (f.name.match(/\.l$/) || f.name.match(/\.js$/)) {
+					srcFiles.push(f);
+				} else {
+					warn(f.name + " is probably not a Lisp or JavaScript file");
+				}
+			}
+			var numFilesToLoad = srcFiles.length;
+			for (var i=0; i<srcFiles.length; i++) {
+				var reader = new FileReader();
+				reader.srcFile = srcFiles[i];
+				reader.onload = function(rEvt) {
+					try {
+						var fileName = rEvt.target.srcFile.name, dropResult = "(unknown result)";
+						jqconsole.Write("loading: " + fileName + "\n", "jqconsole-event");
+						if (fileName.match(/\.l$/)) {
+							// Lisp file
+							dropResult = EMULISP_CORE.loadLispStr(rEvt.target.result).toString();
+						} else if (fileName.match(/\.js$/)) {
+							// JavaScript file
+							dropResult = eval(rEvt.target.result);
+							if (dropResult === undefined) dropResult = "(no value returned)";
+						} else {
+							dropResult = "Why did this happen?";	// very unlikely
+						}
+						if (--numFilesToLoad == 0) stdPrint("-> " + dropResult + "\n");
+					} catch (e) {
+						writeError(e);
+					}
+					jqconsole.Focus();
+				}
+				reader.readAsText(srcFiles[i]);
+			}
+		} else {
+			warn("File Drop not supported by this browser");
+			$("#filedrop").text("");
+		}
+		return false;
+	};
+
 	var jqconsole = $("#console").jqconsole("Welcome to EmuLisp\n", ": ");
 	stdPrint = function(text) { jqconsole.Write(text, "jqconsole-output"); }
 	warn = function(text) { jqconsole.Write(text + "\n", "jqconsole-warning"); }
+	
+	function writeError(e) {
+		var line = e.lineNumber || e.line, lineInfo = line ? (", line: " + line) : "";
+		jqconsole.Write(e.message + lineInfo + "\n", "jqconsole-error");
+	}
 	
 	// Move to line start Ctrl-A
 	jqconsole.RegisterShortcut("A", function() {
@@ -121,7 +202,7 @@ $(function () {
 					jqconsole.Write("-> " + EMULISP_CORE.eval(input) + "\n", "jqconsole-output");
 				}
 			} catch (e) {
-				jqconsole.Write(e.message + "\n", "jqconsole-error");
+				writeError(e);
 			}
 			// Restart the prompt
 			startPrompt();
