@@ -2,8 +2,6 @@
  * (c) Jon Kleiser
  */
 
-"use strict";
-
 var EMULISP_CORE = (function () {
 
 var VERSION = [2, 0, 6, 0],
@@ -214,6 +212,7 @@ function Symbol(name, val) {
 }
 
 function newTransSymbol(name) {
+	if (name == NIL || name === "") return NIL;
 	var ts = new Symbol(name);
 	ts.trans = true;
 	ts.car = ts;

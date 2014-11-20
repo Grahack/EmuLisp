@@ -70,6 +70,7 @@
 			'(= (1 2 3) (mapcar (cadr '(foo length)) (list 1 12 123)))
 			'(= T (= (mapcar '((S V) (put S 'prop V)) '(A B C) (2 4 6)) (mapcar '((S) (get S 'prop)) '(A B C))))
 			'(= (22 11) (let X 11 (list (let (X 22 Y 33) 1 2 X) X)))
+			'(= NIL (str ""))
 			'(= '(a (1 2) b) (str "a (1 2) b"))
 			'(= "1 (+ 2 2) 3" (str (1 (+ 2 2) 3)))
 			'(= '(NIL NIL (a b c) "foo") (mapcar any '("" "()" "(a # Comment^Jb c)" "\"foo\"")))
