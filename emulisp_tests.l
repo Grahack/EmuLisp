@@ -61,6 +61,7 @@
 			'(= (3 13) (for ((I . N) 11 (not (= I 4)) (inc N)) (list I N)))
 			'(= (5 4 3 2 1) (make (for (N 1 (<= N 5) (inc N)) (yoke N))))
 			'(= 12 (for X (10 20) (T (inc X) (inc @))))
+			'(= '((1 2 3) (A B) (2 3) (B) (3) NIL) (make (map link (1 2 3) '(A B))))
 			'(= 120 (mapc * (cdr (1 2 3)) (list 4 5 6) (7 8)))		# 3*5*8
 			'(= 120 (mapc (cadr '(foo *)) (2 3) (4 5) (7 8)))		# 3*5*8
 			'(= (56 120) (mapcar * (cdr (1 2 3)) (list 4 5 6) (7 8)))
@@ -147,6 +148,7 @@
 			'(= NIL (or (= 2 3) (= 3 4)))
 			'(= (3 NIL 3) (list (or (= 2 3) 3 (= 4 5)) (or) @))
 			'(= T (or (= *EMUENV "browser") (= *EMUENV "nodejs") (sym? *OS)))
+			'(= '(T T T T T T T T T NIL) (mapcar sym? '(... .1 .1. .1.2 1.2.3 +.1 -.1 1+2 1/2 1.2)))
 			'(= '(T T T NIL T T) (mapcar atom (list (or 1 2) T NIL '(4 5) 'foo "bar")))
 			'(= '(T T NIL T T T) (mapcar bool (list (or 1 2) T NIL '(4 5) 'foo "bar")))
 			'(= '(3 NIL NIL NIL NIL NIL) (mapcar num? (list (+ 1 2) T NIL '(4 5) 'foo "bar")))
@@ -166,6 +168,15 @@
 			'(= NIL (pre? "a" "ba"))
 			'(= "abcd" (pre? NIL "abcd"))
 			'(= T (pre? T T))
+			'(= '(NIL NIL NIL) (need 3))
+			'(= '(NIL NIL a b c) (need 5 '(a b c)))
+			'(= '(a b c NIL NIL) (need -5 '(a b c)))
+			'(= '(x x a b c) (need 5 '(a b c) 'x))
+			'(= '(a b c) (need 2 '(a b c)))
+			'(= '(a b c) (need -2 '(a b c)))
+			'(= (0 0 0 0) (need 4 0))
+			'(= 4 ((car '(+)) 2 2))
+			'(= 6 (let F '((X Y) (* X Y)) ((car '(F)) 2 3)))
 			# The following two pre? tests will fail in Ersatz
 			'(= "123" (pre? 12 123))
 			'(= "123" (pre? (1 2 3) (1 2 3)))
