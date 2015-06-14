@@ -175,6 +175,24 @@
 			# circular lists
 			'(= 1 (caddr (1 2 .)))
 			'(= T (length (1 2 .)))
+			'(= 6 (length (1 2 3 1 2 3)))
+			
+			# objects and classes
+			'(= (10 5 30 20 600)
+				(let R NIL
+					(class +Shape)
+					(dm T (X Y) (=: x X) (=: y Y))
+					(dm move> (DX DY) (inc (:: x) DX) (inc (:: y) DY))
+					(class +Rect +Shape)
+					(dm T (X Y DX DY) (super X Y) (=: dx DX) (=: dy DY))
+					(dm area> () (* (: dx) (: dy)))
+					(setq R (new '(+Rect) 0 0 30 20))
+					(try 'move> R 10 5)
+					(list (get R 'x) (get R 'y) (get R 'dx) (get R 'dy) (area> R)) ) )
+			'(= NIL (try 'msg> 123))
+
+			# todo
+			#'(= '((1 2 3 4) (1 2 3 4) (1 2)) (use A B (list (make (link 1 2) (setq A (made) B (copy A)) (link 3 4)) A B)))
 			
 			# curiosities
 			'(= 33 ('(22 33)))
