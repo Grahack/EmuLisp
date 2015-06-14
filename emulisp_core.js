@@ -1391,6 +1391,13 @@ var coreFunctions = {
 		}
 		return s;
 	},
+	"try": function(c, ex) { var x = evalLisp((ex = ex.cdr).car), y;
+		if ((y = evalLisp((ex = ex.cdr).car)) instanceof Symbol) {
+			TheKey = x;	TheCls = null;
+			if ((x = method(y)) !== null) return evMethod(y, x, ex.cdr);
+		}
+		return NIL;
+	},
 	"untrace": function(c) {
 		var s = evalLisp(c.car), f = cdr(cdr(car(cdr(evalLisp(s))))), b = car(cdr(f));
 		if (car(b) === cst.iSym["pass"]) f = evalLisp(car(cdr(b)));
