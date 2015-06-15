@@ -1006,24 +1006,25 @@ var coreFunctions = {
 		return r.list;
 	},
 	"dm": function(c) { var x, y, s, t;
+		var debug_dm = false;
 		if (! ((x = c).car instanceof Cell)) {
 			s = x.car;
 			t = Class.car;
-			console.log("dm #1: %s", lispToStr(t));
+			if (debug_dm) console.log("dm #1: %s", lispToStr(t));
 		} else {
-			console.log("dm #2, TODO");	// TODO
+			if (debug_dm) console.log("dm #2, TODO");	// TODO
 		}
 		if (s !== T) {
 			setSymbolValue(s, Meth.car);
-			console.log("dm #3, %s", lispToStr(s));	// TODO: msg. when redefined
+			if (debug_dm) console.log("dm #3, %s", lispToStr(s));	// TODO: msg. when redefined
 		}
 		if (x.cdr instanceof Symbol) {
-			console.log("dm #4, TODO: %s", lispToStr(x));	// TODO
+			if (debug_dm) console.log("dm #4, TODO: %s", lispToStr(x));	// TODO
 		}
 		for (y = t.car; (y instanceof Cell) && (y.car instanceof Cell); y = y.cdr) {
 			if (y.car.car === s) {
 				if (! eqVal(x.cdr, y.car.cdr)) {
-					console.log("dm #5, %s, %s", lispToStr(s), lispToStr(t));
+					if (debug_dm) console.log("dm #5, %s, %s", lispToStr(s), lispToStr(t));
 					redefMsg(s, t);
 				}
 				y.car.cdr = x.cdr;
