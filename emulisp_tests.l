@@ -111,6 +111,8 @@
 			#'(= '(B\C\D^E "B\\C\\D\^E" 7) (let A 'B\\C\\D\^E (list A (pack A) (length A))))
 			'(= '("B\\C\\D\^E" "B\\C\\D\^E" 7) (let A "B\\C\\D\^E" (list A (pack A) (length A))))
 			'(= '(("B" "\\" "C" "\^" "D") ("B" "\\" "C" "\^" "D")) (list (chop 'B\\C\^D) (chop "B\\C\^D")))
+			'(= "A^JB^MC^IDxE" "A\nB\rC\tD\xE")
+			'(= "ABC: €9.99" "A\66\C: \8364\9.99")
 			'(= '(("1" "2" "3") NIL (1 2 3)) (list (chop 123) (chop NIL) (chop (1 2 3))))
 			'(= '(NIL 3 3 "X" "Y" 'X 'Y) (let L (3 'Y "Y" 'X 3 "X" NIL) (sort L)))
 			'(= '('Y 'X "Y" "X" 3 3 NIL) (let L (3 'Y "Y" 'X 3 "X" NIL) (sort L >)))
@@ -175,6 +177,7 @@
 			# circular lists
 			'(= 1 (caddr (1 2 .)))
 			'(= T (length (1 2 .)))
+			'(= T (length (1 . (2 3 .))))
 			'(= 6 (length (1 2 3 1 2 3)))
 			
 			# objects and classes
@@ -197,6 +200,10 @@
 			# curiosities
 			'(= 33 ('(22 33)))
 			'(= NIL ('(22)))
+			
+			#{
+				(println "Things inside multi-line comments should be ignored!")
+			}#
 			) )
 	(println 'Tests: (+ Goods Bads) 'Errors: Bads)
 	(if (= *EMUENV "browser")
