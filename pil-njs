@@ -3,8 +3,8 @@
 
 // Helper file to run EmuLisp on NodeJS.
 
-fs = require('fs')
-path = require('path')
+var fs = require('fs')
+var path = require('path')
 
 // Override _stdPrint with the official mechanism.
 function stdPrint(text) {
