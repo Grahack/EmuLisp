@@ -2,8 +2,6 @@
  * (c) Jon Kleiser
  */
 
-"use strict";
-
 var EMULISP_CORE = (function () {
 
 var VERSION = [2, 0, 2, 1],
