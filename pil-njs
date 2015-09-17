@@ -1,0 +1,80 @@
+#!/bin/sh
+':' //; exec "$(command -v nodejs || command -v node)" "$0" "$@"
+
+// Helper file to run EmuLisp on NodeJS.
+
+fs = require('fs')
+path = require('path')
+
+// Override _stdPrint with the official mechanism.
+function stdPrint(text) {
+	console.log(text.replace(/\n$/g,''));
+}
+// Override _warn with the official mechanism.
+function warn(msg) {
+	console.log(msg);
+}
+
+var NO_DEBUG = "piljs -> no debug yet";
+
+// Load int.js.
+var int_src = fs.readFileSync(
+    path.resolve(__dirname, 'int.js')).toString();
+eval(int_src);
+
+// Load EmuLisp.
+var emulisp_src = fs.readFileSync(
+    path.resolve(__dirname, 'emulisp_core.js')).toString();
+eval(emulisp_src);
+
+// Process command line args.
+// TODO http://www.software-lab.de/doc/refL.html#load
+var arglist = process.argv.slice(2);
+while (true) {
+    var arg = arglist.shift();
+    if (typeof arg == 'undefined') {
+        // Now all command line args have been consumed.
+        break;
+    }
+    var src;
+    if (arg.slice(0, 1) == '-') {
+        // Interpret arg as source code.
+        src = '(' + arg.slice(1) + ')';
+    } else {
+        // Interpret arg as a file to read.
+        if(fs.existsSync(arg)) {
+            src = fs.readFileSync(arg).toString();
+        } else {
+            if (arg == '+') {
+                console.log("+ not supported (yet)");
+            } else {
+                console.log(arg + " not found.");
+            }
+        }
+    }
+    try {
+        EMULISP_CORE.eval(src);
+    } catch(e) {
+        console.log(e.message)
+        EMULISP_CORE.eval("(run *Err)");
+        console.log("? (" + NO_DEBUG + ")");
+    }
+}
+
+// REPL
+var readlinesync = require('readline-sync');
+readlinesync.setPrompt(": ");
+while (true) {
+    var user_input = readlinesync.prompt();
+    try {
+        var result = EMULISP_CORE.eval(user_input);
+        console.log('-> ' + result);
+    } catch(e) {
+        console.log("!? " + user_input)
+        console.log(e.message)
+        EMULISP_CORE.eval("(run *Err)");
+        console.log("? (" + NO_DEBUG + ")");
+    }
+}
+
+// vim: filetype=javascript
