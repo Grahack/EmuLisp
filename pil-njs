@@ -6,6 +6,8 @@
 var fs = require('fs')
 var path = require('path')
 
+var EMULISP_CORE = require('./emulisp_core')
+
 // Override _stdPrint with the official mechanism.
 function stdPrint(text) {
 	console.log(text.replace(/\n$/g,''));
@@ -21,11 +23,6 @@ var NO_DEBUG = "piljs -> no debug yet";
 var int_src = fs.readFileSync(
     path.resolve(__dirname, 'int.js')).toString();
 eval(int_src);
-
-// Load EmuLisp.
-var emulisp_src = fs.readFileSync(
-    path.resolve(__dirname, 'emulisp_core.js')).toString();
-eval(emulisp_src);
 
 // Process command line args.
 // TODO http://www.software-lab.de/doc/refL.html#load

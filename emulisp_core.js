@@ -2,7 +2,9 @@
  * (c) Jon Kleiser
  */
 
-var EMULISP_CORE = (function () {
+"use strict";
+
+module.exports = (function () {
 
 var VERSION = [2, 0, 2, 1],
 	MONLEN = [31, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
