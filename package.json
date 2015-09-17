@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/Grahack/EmuLisp/issues"
   },
-  "homepage": "https://github.com/Grahack/EmuLisp#readme"
+  "homepage": "https://github.com/Grahack/EmuLisp#readme",
+  "dependencies": {
+    "readline-sync": "^1.2.21"
+  }
 }
