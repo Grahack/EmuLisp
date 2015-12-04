@@ -1,6 +1,6 @@
 {
   "name": "emulisp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Description",
   "main": "emulisp_core.js",
   "bin": {"pil-njs": "./pil-njs", "pil-njs-w": "./pil-njs.bat"},
