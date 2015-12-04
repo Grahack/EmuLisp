@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Description",
   "main": "emulisp_core.js",
-  "bin": {"pil-njs": "./pil-njs"},
+  "bin": {"pil-njs": "./pil-njs", "pil-njs-w": "./pil-njs.bat"},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
