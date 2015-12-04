@@ -5,7 +5,7 @@
   "main": "emulisp_core.js",
   "bin": {"pil-njs": "./pil-njs", "pil-njs-w": "./pil-njs.bat"},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node emulisp_tests.js"
   },
   "repository": {
     "type": "git",
