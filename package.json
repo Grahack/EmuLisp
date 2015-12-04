@@ -15,6 +15,9 @@
     "lisp"
   ],
   "author": "Jon Kleiser",
+  "contributors": [
+    "Christophe Gragnic <christophegragnic@gmail.com>"
+  ],
   "license": "GPL-2.0",
   "bugs": {
     "url": "https://github.com/Grahack/EmuLisp/issues"
