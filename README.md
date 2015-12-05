@@ -14,8 +14,16 @@ Javascript partial implementation of [PicoLisp](http://picolisp.com/)
 Please note:
 
 * I'm not the original author.
-* The original author is OK with this repo.
-* When he has time, things will evolve.
+* The original author is OK with this package.
+
+This package is a quick and dirty way to make EmuLisp available to the NodeJS
+platform. There is still some issues like:
+
+* it's not the most recent version of EmuLisp,
+* the architecture of the package is not optimal/classical regarding good
+  practices for npm packages,
+* the version number is not the EmuLisp one since I'm republishing a lot while
+  learning how to package for npm.
 
 # Author's note
 
