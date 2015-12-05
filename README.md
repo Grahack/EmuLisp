@@ -9,12 +9,16 @@ Javascript partial implementation of [PicoLisp](http://picolisp.com/)
 * [Github pages](http://grahack.github.io/EmuLisp/)
 * [Github repo](https://github.com/Grahack/EmuLisp/tree/npm) (`npm` branch)
 
+# Instructions
+
     npm install emulisp -g
 
 will make a command available:
 
 * `pil-njs-w` on Windows,
 * `pil-njs` on the other plaforms.
+
+This command should work as the beloved `pil`.
 
 # Maintainer's note
 
