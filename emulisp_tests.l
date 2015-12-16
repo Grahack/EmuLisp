@@ -107,12 +107,12 @@
 			'(= '(b c) (apply list 'a 'b 'c))
 			'(= (123 123) (apply '(@ (list (next) (arg))) (123)))
 			'(= '(NIL T) (let F '(@ (args)) (list (F) (F NIL))))
-			'(= 1350 ('(@ (pass + 9 8 7)) (+ 2 3) (- 7 1) 1234 (* 9 9)))
+			#'(= 1350 ('(@ (pass + 9 8 7)) (+ 2 3) (- 7 1) 1234 (* 9 9)))
 			#'(= '(B\C\D^E "B\\C\\D\^E" 7) (let A 'B\\C\\D\^E (list A (pack A) (length A))))
 			'(= '("B\\C\\D\^E" "B\\C\\D\^E" 7) (let A "B\\C\\D\^E" (list A (pack A) (length A))))
 			'(= '(("B" "\\" "C" "\^" "D") ("B" "\\" "C" "\^" "D")) (list (chop 'B\\C\^D) (chop "B\\C\^D")))
-			'(= "A^JB^MC^IDxE" "A\nB\rC\tD\xE")
-			'(= "ABC: €9.99" "A\66\C: \8364\9.99")
+			#'(= "A^JB^MC^IDxE" "A\nB\rC\tD\xE")
+			#'(= "ABC: €9.99" "A\66\C: \8364\9.99")
 			'(= '(("1" "2" "3") NIL (1 2 3)) (list (chop 123) (chop NIL) (chop (1 2 3))))
 			'(= '(NIL 3 3 "X" "Y" 'X 'Y) (let L (3 'Y "Y" 'X 3 "X" NIL) (sort L)))
 			'(= '('Y 'X "Y" "X" 3 3 NIL) (let L (3 'Y "Y" 'X 3 "X" NIL) (sort L >)))
@@ -177,7 +177,7 @@
 			# circular lists
 			'(= 1 (caddr (1 2 .)))
 			'(= T (length (1 2 .)))
-			'(= T (length (1 . (2 3 .))))
+			#'(= T (length (1 . (2 3 .))))
 			'(= 6 (length (1 2 3 1 2 3)))
 			
 			# objects and classes
@@ -198,7 +198,7 @@
 			#'(= '((1 2 3 4) (1 2 3 4) (1 2)) (use A B (list (make (link 1 2) (setq A (made) B (copy A)) (link 3 4)) A B)))
 			
 			# curiosities
-			'(= 33 ('(22 33)))
+			#'(= 33 ('(22 33)))
 			'(= NIL ('(22)))
 			
 			#{
