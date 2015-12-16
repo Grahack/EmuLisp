@@ -180,6 +180,8 @@
 			# The following two pre? tests will fail in Ersatz
 			'(= "123" (pre? 12 123))
 			'(= "123" (pre? (1 2 3) (1 2 3)))
+			'(= "0" (format 0))
+			'(= 0 (format "0"))
 			# The following two rand tests may theoretically fail
 			'(= (-5 9) (let (R NIL Lo T Hi NIL)
 				(do 1000 (setq R (rand -5 9)) (if (< R Lo) (setq Lo R)) (if (> R Hi) (setq Hi R))) (list Lo Hi)))
