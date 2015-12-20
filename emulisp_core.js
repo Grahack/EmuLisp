@@ -897,7 +897,7 @@ function lispFnOrder(a, b) { return cst.compExprArr[0].evalTrue(a, b) ? -1 : 1; 
 
 var coreFunctions = {
 	"and": function(c) { var v = NIL; while (c instanceof Cell) { v = evalLisp(c.car);
-			if (!aTrue(v)) return NIL; c = c.cdr; } return v;
+		if (!aTrue(v)) return NIL; c = c.cdr; } return v;
 	},
 	"any": function(c) { var cv = evalLisp(c.car);
 		if (cv instanceof Symbol) return cachedTextParse(cv.valueOf()).car;
