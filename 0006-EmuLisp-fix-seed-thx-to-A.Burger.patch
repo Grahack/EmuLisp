@@ -1,0 +1,28 @@
+From 9a5d1e82acdb058c9110a0feb44eead7c2d7c4c4 Mon Sep 17 00:00:00 2001
+From: Christophe Gragnic <christophegragnic@gmail.com>
+Date: Sun, 26 Apr 2015 19:17:56 +0200
+Subject: [PATCH] EmuLisp: fix 'seed', thx to A.Burger.
+
+---
+ emulisp/emulisp_core.js | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/emulisp/emulisp_core.js b/emulisp/emulisp_core.js
+index 63e32de..f54c785 100644
+--- a/emulisp/emulisp_core.js
++++ b/emulisp/emulisp_core.js
+@@ -1423,7 +1423,11 @@ var coreFunctions = {
+ 		return (cv instanceof Cell) ? prog(cv) : cv;	// TODO: binding env. offset cnt
+ 	},
+ 	"seed": function(c) {
++		// The seed is correctly set,
++		// but the number returned is the seed rounded to a JS number.
+ 		var n = initSeed(evalLisp(c.car)).mul("6364136223846793005");
++		// Convert unsigned 64 bit number to 64 bit signed number.
++		n = n.lt("9223372036854775808") ? n : n.sub("18446744073709551616");
+ 		cst.seed = n;
+ 		return new Number(n + "");
+ 	},
+-- 
+2.1.4
+

@@ -1,0 +1,23 @@
+From f4bdf0572b274aaa636e8cff26214ba1edc66532 Mon Sep 17 00:00:00 2001
+From: Christophe Gragnic <christophegragnic@gmail.com>
+Date: Fri, 24 Apr 2015 09:07:49 +0200
+Subject: [PATCH 4/5] EmuLisp: comment module.exports in int.js.
+
+---
+ emulisp/int.js | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/emulisp/int.js b/emulisp/int.js
+index aa2005a..1ea1432 100644
+--- a/emulisp/int.js
++++ b/emulisp/int.js
+@@ -463,5 +463,5 @@ function trim_zeros(int) {
+     return int;
+ }
+ 
+-module.exports = Int;
++// module.exports = Int;
+ 
+-- 
+2.1.4
+

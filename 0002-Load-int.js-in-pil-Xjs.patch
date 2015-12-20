@@ -1,0 +1,41 @@
+From 65d1e35bb5e2c6a852e0089bc7c5b7719bc3c9cc Mon Sep 17 00:00:00 2001
+From: Christophe Gragnic <christophegragnic@gmail.com>
+Date: Fri, 24 Apr 2015 20:17:07 +0200
+Subject: [PATCH 2/5] Load int.js in pil-Xjs.
+
+---
+ emulisp/pil-njs | 5 +++++
+ emulisp/pil-rjs | 1 +
+ 2 files changed, 6 insertions(+)
+
+diff --git a/emulisp/pil-njs b/emulisp/pil-njs
+index 31cbbab..2547809 100755
+--- a/emulisp/pil-njs
++++ b/emulisp/pil-njs
+@@ -17,6 +17,11 @@ function warn(msg) {
+ 
+ var NO_DEBUG = "piljs -> no debug yet";
+ 
++// Load int.js.
++var int_src = fs.readFileSync(
++    path.resolve(__dirname, 'int.js')).toString();
++eval(int_src);
++
+ // Load EmuLisp.
+ var emulisp_src = fs.readFileSync(
+     path.resolve(__dirname, 'emulisp_core.js')).toString();
+diff --git a/emulisp/pil-rjs b/emulisp/pil-rjs
+index 454f59c..e0c50f3 100755
+--- a/emulisp/pil-rjs
++++ b/emulisp/pil-rjs
+@@ -19,6 +19,7 @@ var NO_DEBUG = "piljs -> no debug yet";
+ var before_rhino_regex = new RegExp('^(.*)js\.jar.*');
+ var matches = before_rhino_regex.exec(environment["sun.java.command"]);
+ var abs_path = matches[1] + "../";
++load(abs_path + 'emulisp/int.js');
+ load(abs_path + 'emulisp/emulisp_core.js');
+ 
+ // Process command line args.
+-- 
+2.1.4
+
