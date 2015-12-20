@@ -1820,7 +1820,11 @@ function _stdPrint(text) {
 	if (typeof stdPrint === "function") stdPrint(text)
 	else // when function stdPrint is not available in front end
 	//if (!confirm("_stdPrint:\n" + text)) throw new Error("_stdPrint aborted");
-	console.log(text);
+	if (emuEnv() == 'rhino') {
+		print(text);
+	} else {
+		console.log(text);
+	}
 }
 
 function _warn(msg) {
