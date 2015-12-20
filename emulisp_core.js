@@ -939,6 +939,21 @@ var coreFunctions = {
 		while (arr.length > 0) v = new Cell(newTransSymbol(arr.pop()), v);
 		return v;
 	},
+	"conc": function(c, ex) {
+		var z = evalLisp((ex = ex.cdr).car);
+		var x = z;
+		var y;
+		while ((ex = ex.cdr) instanceof Cell) {
+			if (!(x instanceof Cell)) {
+				z = x = evalLisp(ex.car);
+			} else {
+			while ((y = x.cdr) instanceof Cell)
+				x = y;
+			x.cdr = evalLisp(ex.car);
+			}
+		}
+		return z;
+	},
 	"cond": function(c) {
 		while (c.car instanceof Cell) {
 			if (aTrue(evalLisp(c.car.car))) return prog(c.car.cdr);
