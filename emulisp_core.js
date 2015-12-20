@@ -1122,6 +1122,12 @@ var coreFunctions = {
 	"index": function(c) { var i = indx(evalLisp(c.car), evalLisp(c.cdr.car));
 		return (i === 0) ? NIL : new Number(i);
 	},
+	"last": function(c, ex) {
+		if (!((x = evalLisp(ex.cdr.car)) instanceof Cell)) return x;
+		while (x.cdr instanceof Cell)
+			x = x.cdr;
+		return x.car;
+	},
 	"le0": function(c) { var cv = evalLisp(c.car);
 		return ((cv instanceof Number) && (cv <= 0)) ? cv : NIL; },
 	"length": function(c) { var cv = evalLisp(c.car), v = 0;
