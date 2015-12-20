@@ -61,6 +61,7 @@
 			'(= (3 13) (for ((I . N) 11 (not (= I 4)) (inc N)) (list I N)))
 			'(= (5 4 3 2 1) (make (for (N 1 (<= N 5) (inc N)) (yoke N))))
 			'(= 12 (for X (10 20) (T (inc X) (inc @))))
+			'(= '((1 2 3) (A B) (2 3) (B) (3) NIL) (make (map link (1 2 3) '(A B))))
 			'(= 120 (mapc * (cdr (1 2 3)) (list 4 5 6) (7 8)))		# 3*5*8
 			'(= 120 (mapc (cadr '(foo *)) (2 3) (4 5) (7 8)))		# 3*5*8
 			'(= (56 120) (mapcar * (cdr (1 2 3)) (list 4 5 6) (7 8)))
@@ -111,6 +112,8 @@
 			#'(= '(B\C\D^E "B\\C\\D\^E" 7) (let A 'B\\C\\D\^E (list A (pack A) (length A))))
 			'(= '("B\\C\\D\^E" "B\\C\\D\^E" 7) (let A "B\\C\\D\^E" (list A (pack A) (length A))))
 			'(= '(("B" "\\" "C" "\^" "D") ("B" "\\" "C" "\^" "D")) (list (chop 'B\\C\^D) (chop "B\\C\^D")))
+			'(= "A^JB^MC^IDxE" "A\nB\rC\tD\xE")
+			'(= "ABC: €9.99" "A\66\C: \8364\9.99")
 			'(= '(("1" "2" "3") NIL (1 2 3)) (list (chop 123) (chop NIL) (chop (1 2 3))))
 			'(= '(NIL 3 3 "X" "Y" 'X 'Y) (let L (3 'Y "Y" 'X 3 "X" NIL) (sort L)))
 			'(= '('Y 'X "Y" "X" 3 3 NIL) (let L (3 'Y "Y" 'X 3 "X" NIL) (sort L >)))
@@ -139,12 +142,18 @@
 			'(= (3 (3 2 1)) (let S NIL (list (push 'S 1 2 (+ 4 -1)) S)))
 			'(= '(NIL (NIL)) (let S NIL (list (push 'S) S)))
 			'(= '((4 3 . 1) 2) (let L (1 2) (push L 3 4) L))
+			'(= "NIL" (sym NIL))
+			'(= "(1 2 3)" (sym (1 2 3)))
+			'(= "(1 2 3)" (sym '(1 2 3)))
+			'(= "(1 2 3)" (sym (quote 1 2 3)))
+			'(= "\"hello\"" (sym "hello"))
 			'(= "(\"(1 2)\" \"(3 4)\")" (sym (list (sym '(1 2)) (sym '(3 4)))))
 			'(= 4 (and (= 2 2) (= 3 3) 4))
 			'(= (3 NIL 3) (list (and (= 2 2) 3) (and) @))
 			'(= NIL (or (= 2 3) (= 3 4)))
 			'(= (3 NIL 3) (list (or (= 2 3) 3 (= 4 5)) (or) @))
 			'(= T (or (= *EMUENV "browser") (= *EMUENV "nodejs") (sym? *OS)))
+			'(= '(T T T T T T T T T NIL) (mapcar sym? '(... .1 .1. .1.2 1.2.3 +.1 -.1 1+2 1/2 1.2)))
 			'(= '(T T T NIL T T) (mapcar atom (list (or 1 2) T NIL '(4 5) 'foo "bar")))
 			'(= '(T T NIL T T T) (mapcar bool (list (or 1 2) T NIL '(4 5) 'foo "bar")))
 			'(= '(3 NIL NIL NIL NIL NIL) (mapcar num? (list (+ 1 2) T NIL '(4 5) 'foo "bar")))
@@ -164,6 +173,15 @@
 			'(= NIL (pre? "a" "ba"))
 			'(= "abcd" (pre? NIL "abcd"))
 			'(= T (pre? T T))
+			'(= '(NIL NIL NIL) (need 3))
+			'(= '(NIL NIL a b c) (need 5 '(a b c)))
+			'(= '(a b c NIL NIL) (need -5 '(a b c)))
+			'(= '(x x a b c) (need 5 '(a b c) 'x))
+			'(= '(a b c) (need 2 '(a b c)))
+			'(= '(a b c) (need -2 '(a b c)))
+			'(= (0 0 0 0) (need 4 0))
+			'(= 4 ((car '(+)) 2 2))
+			'(= 6 (let F '((X Y) (* X Y)) ((car '(F)) 2 3)))
 			# The following two pre? tests will fail in Ersatz
 			'(= "123" (pre? 12 123))
 			'(= "123" (pre? (1 2 3) (1 2 3)))
@@ -175,10 +193,33 @@
 			# circular lists
 			'(= 1 (caddr (1 2 .)))
 			'(= T (length (1 2 .)))
+			'(= T (length (1 . (2 3 .))))
+			'(= 6 (length (1 2 3 1 2 3)))
+			
+			# objects and classes
+			'(= (10 5 30 20 600)
+				(let R NIL
+					(class +Shape)
+					(dm T (X Y) (=: x X) (=: y Y))
+					(dm move> (DX DY) (inc (:: x) DX) (inc (:: y) DY))
+					(class +Rect +Shape)
+					(dm T (X Y DX DY) (super X Y) (=: dx DX) (=: dy DY))
+					(dm area> () (* (: dx) (: dy)))
+					(setq R (new '(+Rect) 0 0 30 20))
+					(try 'move> R 10 5)
+					(list (get R 'x) (get R 'y) (get R 'dx) (get R 'dy) (area> R)) ) )
+			'(= NIL (try 'msg> 123))
+
+			# todo
+			#'(= '((1 2 3 4) (1 2 3 4) (1 2)) (use A B (list (make (link 1 2) (setq A (made) B (copy A)) (link 3 4)) A B)))
 			
 			# curiosities
 			'(= 33 ('(22 33)))
 			'(= NIL ('(22)))
+			
+			#{
+				(println "Things inside multi-line comments should be ignored!")
+			}#
 			) )
 	(println 'Tests: (+ Goods Bads) 'Errors: Bads)
 	(if (= *EMUENV "browser")
