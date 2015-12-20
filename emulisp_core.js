@@ -903,6 +903,23 @@ var coreFunctions = {
 		if (cv instanceof Symbol) return cachedTextParse(cv.valueOf()).car;
 		throw new Error(newErrMsg(SYM_EXP, cv));
 	},
+	"append": function(c, ex) {
+		for (ex = ex.cdr; (z = ex.Cdr) instanceof Cell; ex = z) {
+			if ((x = evalLisp(ex.car)) instanceof Cell) {
+				z = y = new Cell(x.car, x.cdr);
+				while ((x = y.cdr) instanceof Cell)
+					y = y.cdr = new Cell(x.car, x.cdr);
+				while ((ex = ex.cdr).cdr instanceof Cell) {
+					for (x = evalLisp(ex.car); x instanceof Cell; x = y.cdr)
+						y = y.cdr = new cell(x.car, x.cdr);
+					y.cdr = x;
+				}
+				y.cdr = evalLisp(ex.car);
+				return z;
+			}
+		}
+		return evalLisp(ex.car);
+	},
 	"apply": function(c) { return applyFn(c.car, evalLisp(c.cdr.car), c.cdr.cdr); },
 	"arg": function(c) { var n = 0, f = cst.evFrames.car;
 		if (c !== NIL) {

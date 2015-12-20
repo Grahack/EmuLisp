@@ -184,6 +184,7 @@
 			'(= (-5 9) (let (R NIL Lo T Hi NIL)
 				(do 1000 (setq R (rand -5 9)) (if (< R Lo) (setq Lo R)) (if (> R Hi) (setq Hi R))) (list Lo Hi)))
 			'(= '(NIL T) (let L () (do 100 (let R (rand T) (ifn (index R L) (setq L (cons R L))))) (sort L)))
+			'(= '(1 2 3 4) (append (1 2) (3 4)))
 			
 			# circular lists
 			'(= 1 (caddr (1 2 .)))
