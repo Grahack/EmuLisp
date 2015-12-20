@@ -12,6 +12,7 @@ var VERSION = [2, 0, 6, 0],
 	BOOL_EXP = "Boolean expected", CELL_EXP = "Cell expected", LIST_EXP = "List expected",
 	NUM_EXP = "Number expected", SYM_EXP = "Symbol expected", VAR_EXP = "Variable expected",
 	EXEC_OR_NUM_EXP = "Executable or Number expected",
+	CHANNEL_NOT_SUPPORTED = "EmuLisp only supports the NIL channel",
 	BAD_ARG = "Bad argument", BAD_DOT = "Bad dotted pair", BAD_INPUT = "Bad input",
 	BAD_MSG = "Bad message", BAD_SUPER = "Bad super", DIV_0 = "Div/0",
 	NOT_MAK = "Not making", PROT_SYM = "Protected symbol", UNDEF = "Undefined",
@@ -896,6 +897,34 @@ CompExpr.prototype.evalTrue = function(a, b) {
 
 function lispFnOrder(a, b) { return cst.compExprArr[0].evalTrue(a, b) ? -1 : 1; }
 
+function emuprompt(c) { // No support (yet) for the two parameters (non-split chars and comment char).
+	if (emuEnv() == 'nodejs') {
+		var readlinesync = require('readline-sync');
+		readlinesync.setPrompt("");
+		_stdPrompt = readlinesync.prompt;
+	} else if (emuEnv() == 'rhino') {
+		importPackage(java.io);
+		importPackage(java.lang);
+		var stdin = new BufferedReader(new InputStreamReader(System['in']));
+		_stdPrompt = function () { return stdin.readLine(); }
+	} else {
+		if (typeof stdPrompt != "undefined") {
+			var _stdPrompt = stdPrompt;
+		} else {
+			var _stdPrompt = window.prompt;
+		}
+	}
+	var user_input = _stdPrompt();
+	if (emuEnv() == 'nodejs') {
+		readlinesync.setPrompt(": ");
+	}
+	if (user_input === "") {
+		return NIL;
+	} else {
+		return newTransSymbol(user_input);
+	}
+}
+
 var coreFunctions = {
 	"and": function(c) { var v = NIL; while (c instanceof Cell) { v = evalLisp(c.car);
 			if (!aTrue(v)) return NIL; c = c.cdr; } return v;
@@ -1113,6 +1142,14 @@ var coreFunctions = {
 	},
 	"if": function(c) { return aTrue(evalLisp(c.car)) ? evalLisp(c.cdr.car) : prog(c.cdr.cdr); },
 	"ifn": function(c) { return aTrue(evalLisp(c.car)) ? prog(c.cdr.cdr) : evalLisp(c.cdr.car); },
+	"in": function(c) { // For now only the NIL channel is supported, just for compat with the use of 'read'.
+		var chan = c.car;
+		if (chan === NIL) {
+			return prog(c.cdr);
+		} else {
+			throw new Error(newErrMsg(CHANNEL_NOT_SUPPORTED, chan));
+		}
+	},
 	"inc": function(c) {
 		if (c === NIL) return NIL;
 		var ns = evalLisp(c.car);
@@ -1148,6 +1185,7 @@ var coreFunctions = {
 		while (symArr.length > 0) { symArr.pop().popValue(); }
 		return v;
 	},
+	"line": emuprompt,
 	"link": linkc,
 	"list": function(c) { return (c !== NIL) ? evalArgs(c) : new Cell(NIL, NIL); },
 	"load": function(c) { var r = NIL;
@@ -1314,6 +1352,7 @@ var coreFunctions = {
 		var r = new List(); do { r.link(n); n = new Number(n + s); } while ((s > 0) ? (n <= n2) : (n >= n2));
 		return r.list;
 	},
+	"read": emuprompt,
 	"rest": function(c) { return cst.evFrames.car.cdr; },
 	"reverse": function(c) { var lst = evalLisp(c.car), r = NIL;
 		if (!(lst instanceof Cell)) return NIL;
