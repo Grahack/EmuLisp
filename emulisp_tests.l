@@ -41,6 +41,7 @@
 			'(= NIL (pack ""))
 			'(= 6 (eval (list '+ 1 2 3)))
 			'(= '(9 (a 9 c)) (list (set 'L '(a b c) (cdr L) 9) L))
+			'(let (X NIL) (prog (set 'X 0) (= 0 X)))
 			'(= '(3 3) (list (set (car (str "X")) 3) X))
 			'(= '((a b c) b) (let L '(a b c) (list (val 'L) (val (cdr L)))))
 			'(= "BCDC" (prog (setq A 'B B 'C C 'D) (pack A B C (eval A))))
