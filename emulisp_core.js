@@ -21,7 +21,7 @@ function getFileSync(fileUrl) {
 	var req = new XMLHttpRequest();
 	var OK = fileUrl.match(/^https?:/) ? 200 : 0;
 	req.open("GET", fileUrl, false);		// synchronous
-	if (req.overrideMimeType) req.overrideMimeType("text/plain; charset=utf-8");
+	req.overrideMimeType("text/plain; charset=utf-8");
 	req.send(null);
 	//console.log("getFileSync: %s -> %s, %s", fileUrl, req.status, req.responseText.length);
 	if (req.status == OK) {
