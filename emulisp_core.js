@@ -214,6 +214,7 @@ function Symbol(name, val) {
 }
 
 function newTransSymbol(name) {
+	if (name === "") return NIL;
 	var ts = new Symbol(name);
 	ts.trans = true;
 	ts.car = ts;
